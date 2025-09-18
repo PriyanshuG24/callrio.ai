@@ -1,0 +1,98 @@
+'use client'
+
+import { useSession } from "@/lib/auth-client"
+import { usePathname, useRouter } from "next/navigation"
+import { LogOut, Package } from "lucide-react"
+import { Button } from "../ui/button"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuContent, DropdownMenuItem } from "../ui/dropdown-menu"
+import { Avatar, AvatarFallback } from "../ui/avatar"
+import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
+import { signOut } from "@/lib/auth-client"
+import Link from "next/link"
+
+export default function Header() {
+  const pathname = usePathname()
+  const router = useRouter()
+  const { data: session, isPending } = useSession()
+  
+  const isLoginPage = pathname === '/login'
+
+
+  const handleLogout = async () => {
+    await signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.push('/')
+        }
+      }
+    })
+  }
+
+  // Don't show header on login page
+  if (isLoginPage) {
+    return null
+  }
+
+  // Show skeleton loading while checking auth
+  if (isPending) {
+    return (
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b">
+        <div className="container flex h-16 items-center justify-between px-4">
+          <div className="h-8 w-32 bg-gray-200 animate-pulse rounded" />
+          <div className="h-8 w-20 bg-gray-200 animate-pulse rounded" />
+        </div>
+      </header>
+    )
+  }
+
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-sm border-b border-gray-200">
+      <div className="container flex h-16 items-center justify-between px-4">
+        <div className="flex items-center gap-4">
+          <Link href="/" className="flex items-center gap-2">
+            <span className="text-lg font-semibold text-gray-900">CLARIO.ai</span>
+          </Link>
+        </div>
+        <div className="flex items-center gap-6">
+          {session ? (
+            <div className="flex items-center gap-3">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-8 w-8 rounded-full hover:bg-gray-100">
+                    <Avatar className="h-8 w-8 border border-gray-200">
+                      <AvatarFallback className="bg-blue-100 text-blue-600">
+                        {session?.user?.name?.charAt(0).toUpperCase() || "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end">
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium text-gray-900">{session?.user?.name}</p>
+                      <p className="text-xs text-gray-500">{session?.user?.email}</p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator className="bg-gray-200" />
+                  <DropdownMenuItem 
+                    onClick={handleLogout} 
+                    className="cursor-pointer text-red-600 hover:bg-red-50"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span className="font-medium">Logout</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          ) : (
+            <Link href="/login">
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                Login
+              </Button>
+            </Link>
+          )}
+        </div>
+      </div>
+    </header>
+  )
+}

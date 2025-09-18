@@ -1,3 +1,28 @@
+# Calrio
+
+Calrio is a modern B2B SaaS platform designed to transform meetings into actionable content.  
+With support for role-based meetings (Admin, Guest, Producer), Calrio enables secure collaboration,  
+automatic recording, AI-driven transcription, highlight clip generation, and one-click publishing  
+to major platforms such as YouTube, LinkedIn, and Spotify.
+
+### Core Features
+- 🎥 **Meetings** – Host secure online meetings with admin & producer controls.
+- 📼 **Recording** – Store and manage meeting recordings in the cloud.
+- 🤖 **AI Transcription** – Auto-generate transcripts with Whisper/AI.
+- ✂️ **Smart Clips** – Create highlight clips using AI & ffmpeg.
+- 🚀 **Publishing** – Push recordings & clips directly to external platforms.
+- 🔐 **Role Management** – Admin, Producer, Guest access control.
+
+### Tech Stack
+- **Frontend:** Next.js 14, TailwindCSS, shadcn/ui
+- **Backend:** Next.js API Routes / Node.js, PostgreSQL (Prisma/Drizzle)
+- **Video SDK:** Daily.co / LiveKit / 100ms
+- **Storage:** AWS S3 / Supabase Storage
+- **AI Services:** Whisper API, OpenAI, ffmpeg
+- **Deployment:** Vercel (frontend), Railway/Supabase (backend + DB)
+
+---
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

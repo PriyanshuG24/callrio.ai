@@ -2,16 +2,18 @@
 
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Home, Plus, Clock, Calendar, Video, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Home, Plus, Clock, Calendar,CalendarClock, Video, ChevronRight, ChevronLeft } from 'lucide-react';
 import { useSession } from '@/lib/auth-client'; 
 import Link from 'next/link';
 
 const navItems = [
   { name: 'Home', href: '/', icon: Home, alwaysShow: true },
-  { name: 'New Meeting', href: '/create-meeting', icon: Plus, requiresAuth: true },
-  { name: 'Previous', href: '/previous', icon: Clock, requiresAuth: true },
-  { name: 'Upcoming', href: '/upcoming', icon: Calendar, requiresAuth: true },
-  { name: 'Join', href: '/join', icon: Video, requiresAuth: true },
+  { name: 'New Meeting', href: '/dashboard/create-meeting', icon: Plus, requiresAuth: true },
+  { name: 'Previous', href: '/dashboard/previous', icon: Clock, requiresAuth: true },
+  { name: 'Upcoming', href: '/dashboard/upcoming', icon: CalendarClock, requiresAuth: true },
+  { name: 'Join', href: '/dashboard/join', icon: Video, requiresAuth: true },
+  { name: 'Schedule', href: '/dashboard/schedule', icon: Calendar, requiresAuth: true },
+  
 ];
 
 export function Sidebar({ isCollapsed, onToggleCollapse }: { isCollapsed: boolean; onToggleCollapse: () => void }) {

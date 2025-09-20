@@ -16,6 +16,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     setIsSidebarOpen(false);
   }, [pathname]);
 
+  // Return null for dashboard routes
+  if (pathname?.startsWith('/dashboard')) {
+    return <>{children}</>;
+  }
+
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       {/* Header - fixed at top with highest z-index */}
@@ -27,27 +32,20 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         {/* Sidebar - positioned below header */}
         <div className="fixed left-0 top-16 h-[calc(100vh-4rem)] z-40">
           <Sidebar 
-            isCollapsed={isCollapsed}
-            onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
+            isCollapsed={isCollapsed} 
+            onToggleCollapse={() => setIsCollapsed(!isCollapsed)} 
           />
         </div>
         
-        {/* Main content area - positioned next to sidebar */}
-        <div 
+        {/* Main content area */}
+        <main 
           className={cn(
-            "flex-1 transition-all duration-300 ease-in-out h-full overflow-y-auto",
-            isCollapsed ? "ml-20" : "ml-64"
+            "flex-1 overflow-y-auto transition-all duration-300",
+            isCollapsed ? "ml-16" : "ml-64"
           )}
-          style={{
-            paddingLeft: isSidebarOpen && isCollapsed ? '5rem' : undefined
-          }}
         >
-          <main className="bg-gray-50 dark:bg-gray-900 min-h-[calc(100vh-4rem)] p-4 md:p-6">
-            <div className="max-w-7xl mx-auto w-full">
-              {children}
-            </div>
-          </main>
-        </div>
+          {children}
+        </main>
       </div>
     </div>
   );

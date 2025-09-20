@@ -10,6 +10,8 @@ import { Avatar, AvatarFallback } from "../ui/avatar"
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
 import { signOut } from "@/lib/auth-client"
 import Link from "next/link"
+import { disconnectStreamClient } from "@/lib/stream-client"
+
 type HeaderProps = {
  
 };
@@ -27,8 +29,9 @@ export function Header({}: HeaderProps) {
         onSuccess: () => {
           router.push('/')
         }
-      }
+      },
     })
+    disconnectStreamClient()
   }
 
   

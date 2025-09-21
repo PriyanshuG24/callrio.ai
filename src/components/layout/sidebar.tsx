@@ -11,9 +11,8 @@ const navItems = [
   { name: 'New Meeting', href: '/dashboard/create-meeting', icon: Plus, requiresAuth: true },
   { name: 'Previous', href: '/dashboard/previous', icon: Clock, requiresAuth: true },
   { name: 'Upcoming', href: '/dashboard/upcoming', icon: CalendarClock, requiresAuth: true },
-  { name: 'Join', href: '/dashboard/join', icon: Video, requiresAuth: true },
   { name: 'Schedule', href: '/dashboard/schedule', icon: Calendar, requiresAuth: true },
-  
+  { name: 'Recordings', href: '/dashboard/recordings', icon: Video, requiresAuth: true },
 ];
 
 export function Sidebar({ isCollapsed, onToggleCollapse }: { isCollapsed: boolean; onToggleCollapse: () => void }) {

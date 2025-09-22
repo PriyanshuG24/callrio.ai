@@ -2,12 +2,11 @@
 
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Home, Plus, Clock, Calendar,CalendarClock, Video, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Plus, Clock, Calendar,CalendarClock, Video, ChevronRight, ChevronLeft } from 'lucide-react';
 import { useSession } from '@/lib/auth-client'; 
 import Link from 'next/link';
 
 const navItems = [
-  { name: 'Home', href: '/', icon: Home, alwaysShow: true },
   { name: 'New Meeting', href: '/dashboard/create-meeting', icon: Plus, requiresAuth: true },
   { name: 'Previous', href: '/dashboard/previous', icon: Clock, requiresAuth: true },
   { name: 'Upcoming', href: '/dashboard/upcoming', icon: CalendarClock, requiresAuth: true },
@@ -19,7 +18,7 @@ export function Sidebar({ isCollapsed, onToggleCollapse }: { isCollapsed: boolea
   const pathname = usePathname();
   const { data: session, isPending } = useSession();
   const filteredNavItems = navItems.filter(item => 
-    item.alwaysShow || (session && item.requiresAuth)
+    session && item.requiresAuth
   );
   if (isPending) {
     return null;
@@ -29,11 +28,11 @@ export function Sidebar({ isCollapsed, onToggleCollapse }: { isCollapsed: boolea
     <aside
       className={cn(
         'fixed left-0 top-0 h-screen bg-white dark:bg-gray-900 shadow-xl z-50 transition-all duration-300 ease-in-out flex flex-col',
-        isCollapsed ? 'w-20 mt-16' : 'w-64 mt-16'
+        isCollapsed ? 'w-20 ' : 'w-64 '
       )}
     >
      
-      <div className="absolute -right-3 top-20 z-10 hidden md:block">
+      <div className="absolute -right-3 top-26 z-10 hidden md:block">
         <button
           onClick={onToggleCollapse}
           className="h-6 w-6 rounded-full border border-gray-300 bg-white dark:bg-gray-700 shadow-md flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
@@ -47,7 +46,7 @@ export function Sidebar({ isCollapsed, onToggleCollapse }: { isCollapsed: boolea
         </button>
       </div>
 
-      <nav className="flex-1 px-3 py-4">
+      <nav className="flex-1 px-3 py-4 mt-20">
         <ul className="space-y-2">
           {filteredNavItems.map((item) => {
             const isActive = pathname === item.href;

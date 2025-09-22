@@ -1,9 +1,7 @@
 'use client'
-
-import { useState } from 'react';
 import { useSession } from "@/lib/auth-client"
 import { usePathname, useRouter } from "next/navigation"
-import { LogOut, Menu } from "lucide-react"
+import { LogOut } from "lucide-react"
 import { Button } from "../ui/button"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuContent, DropdownMenuItem } from "../ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "../ui/avatar"
@@ -12,11 +10,9 @@ import { signOut } from "@/lib/auth-client"
 import Link from "next/link"
 import { disconnectStreamClient } from "@/lib/stream-client"
 
-type HeaderProps = {
- 
-};
 
-export function Header({}: HeaderProps) {
+
+export function Header() {
   const pathname = usePathname()
   const router = useRouter()
   const { data: session, isPending } = useSession()
@@ -34,15 +30,10 @@ export function Header({}: HeaderProps) {
     disconnectStreamClient()
   }
 
-  
-  if (isLoginPage) {
-    return null
-  }
-
  
   if (isPending) {
     return (
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b">
+      <header suppressHydrationWarning={true} className="fixed top-0 left-0 right-0 z-50 bg-white border-b">
         <div className="container flex h-16 items-center justify-between px-4">
           <div className="h-8 w-32 bg-gray-200 animate-pulse rounded" />
           <div className="h-8 w-20 bg-gray-200 animate-pulse rounded" />

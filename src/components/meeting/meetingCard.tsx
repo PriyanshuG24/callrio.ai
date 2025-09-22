@@ -136,13 +136,13 @@ const MeetingCard = ({ meeting, type }: MeetingCardProps) => {
     // Recording card
     if ('filename' in meeting) {
       return (
-        <div className="p-4 pt-0 border-t">
-          <div className="flex gap-2">
+        <div className="flex items-center justify-center border-t py-2 px-4">
+          <div className="flex gap-4">  
             <Button
               variant="outline"
               size="sm"
-              className="flex-1"
               onClick={() => window.open(meeting.url, '_blank')}
+              className="flex-1"  
             >
               <Play className="h-4 w-4 mr-2" />
               Play
@@ -150,11 +150,11 @@ const MeetingCard = ({ meeting, type }: MeetingCardProps) => {
             <Button
               variant="outline"
               size="sm"
-              className="flex-1"
               onClick={() => {
                 navigator.clipboard.writeText(meeting.url);
                 toast.success('Recording link copied to clipboard');
               }}
+              className="flex-1"  
             >
               <Copy className="h-4 w-4 mr-2" />
               Copy Link
@@ -179,12 +179,11 @@ if (type === 'ended') {
 
     // Upcoming meeting
     return (
-      <div className="p-4 pt-0 border-t">
+      <div className="flex items-center justify-center border-t py-2 px-4">
         <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
-            className="flex-1"
             onClick={handleCopyLink}
           >
             <Copy className="h-4 w-4 mr-2" />
@@ -192,7 +191,6 @@ if (type === 'ended') {
           </Button>
           <Button 
             size="sm" 
-            className="flex-1" 
             onClick={handleStartMeeting}
           >
             <Video className="h-4 w-4 mr-2" />

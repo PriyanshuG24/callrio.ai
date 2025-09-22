@@ -51,7 +51,7 @@ export default function SchedulePage() {
 
         <div className="space-y-6">
           <div>
-            <Label htmlFor="description">Meeting Title</Label>
+            <Label htmlFor="description" className='mx-1'>Meeting Title</Label>
             <Input
               id="description"
               placeholder="Team standup, Client call, etc."
@@ -59,14 +59,14 @@ export default function SchedulePage() {
               onChange={(e) => 
                 setValues({...values, description: e.target.value})
               }
-              className="mt-1"
+              className="mt-2"
               required
             />
           </div>
 
           <div>
-            <Label>Date & Time</Label>
-            <div className="mt-1">
+            <Label htmlFor="dateTime" className='mx-1'>Date & Time</Label>
+            <div className="mt-2">
               <DatePicker
                 selected={values.dateTime}
                 onChange={(date) => 
@@ -78,8 +78,8 @@ export default function SchedulePage() {
                 timeFormat="HH:mm"
                 timeCaption="Time"
                 dateFormat="MMMM d, yyyy HH:mm"
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
-                
+                className="w-full h-10 rounded-md border bg-background px-2 py-1 text-sm ring-offset-background"
+                wrapperClassName='w-full'
               />
             </div>
           </div>

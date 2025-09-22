@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Plus, Clock, Calendar,CalendarClock, Video, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Plus, Clock, Calendar,CalendarClock, Video, ChevronRight, ChevronLeft,User } from 'lucide-react';
 import { useSession } from '@/lib/auth-client'; 
 import Link from 'next/link';
 
@@ -12,6 +12,7 @@ const navItems = [
   { name: 'Upcoming', href: '/dashboard/upcoming', icon: CalendarClock, requiresAuth: true },
   { name: 'Schedule', href: '/dashboard/schedule', icon: Calendar, requiresAuth: true },
   { name: 'Recordings', href: '/dashboard/recordings', icon: Video, requiresAuth: true },
+  {name:'Profile',href:'/dashboard/profile',icon:User,requiresAuth:true}
 ];
 
 export function Sidebar({ isCollapsed, onToggleCollapse }: { isCollapsed: boolean; onToggleCollapse: () => void }) {

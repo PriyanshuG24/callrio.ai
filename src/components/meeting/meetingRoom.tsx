@@ -1,12 +1,17 @@
-import { Call, CallControls, CallParticipantsList, CallStatsButton, PaginatedGridLayout,SpeakerLayout } from '@stream-io/video-react-sdk'
+'use client'
+import { useCall, CallControls, CallParticipantsList, CallStatsButton, PaginatedGridLayout,SpeakerLayout } from '@stream-io/video-react-sdk'
 import React, { useState } from 'react'
 import { cn } from '@/lib/utils'
-import { DropdownMenu,DropdownMenuTrigger,DropdownMenuContent,DropdownMenuLabel } from '../ui/dropdown-menu'
+import { DropdownMenu,DropdownMenuTrigger,DropdownMenuContent } from '../ui/dropdown-menu'
 import { LayoutList, Users } from 'lucide-react'
 import { DropdownMenuItem, DropdownMenuSeparator } from '@radix-ui/react-dropdown-menu'
 import { Button } from '../ui/button'
 import { useSearchParams } from 'next/navigation'
 import { EndCallButton } from './endCallButton'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+import { Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 type CallLayoutType='grid'|'speaker-left'| 'speaker-right'
 const MeetingRoom = () => {
   const searchParams=useSearchParams()
@@ -24,6 +29,44 @@ const MeetingRoom = () => {
       default:
         return <PaginatedGridLayout/>
     }
+  }
+  const [isRedirecting, setIsRedirecting] = useState(false)
+  const router = useRouter()
+  const call = useCall()
+
+  useEffect(() => {
+    if (!call) return
+
+    const handleCallEnded = () => {
+      setIsRedirecting(true)
+      toast.info('The host has ended the meeting')
+      // Small delay to show the toast before redirecting
+      const timer = setTimeout(() => {
+        router.push('/dashboard')
+      }, 2000)
+      
+      return () => clearTimeout(timer)
+    }
+
+    call.on('call.ended', handleCallEnded)
+
+    // Also handle if the call is already ended when component mounts
+    if (call.state.endedAt) {
+      handleCallEnded()
+    }
+
+    return () => {
+      call.off('call.ended', handleCallEnded)
+    }
+  }, [call, router])
+
+  if (isRedirecting) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <Loader2 className="h-8 w-8 animate-spin" />
+        <p className="mt-4">Meeting ended, redirecting...</p>
+      </div>
+    )
   }
   return (
    <section className='relative h-screen w-full overflow-hidden pt-16 text-white'>

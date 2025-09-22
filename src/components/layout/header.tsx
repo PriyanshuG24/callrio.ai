@@ -1,6 +1,6 @@
 'use client'
 import { useSession } from "@/lib/auth-client"
-import { usePathname, useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { LogOut } from "lucide-react"
 import { Button } from "../ui/button"
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuContent, DropdownMenuItem } from "../ui/dropdown-menu"
@@ -13,12 +13,8 @@ import { disconnectStreamClient } from "@/lib/stream-client"
 
 
 export function Header() {
-  const pathname = usePathname()
   const router = useRouter()
   const { data: session, isPending } = useSession()
-  
-  const isLoginPage = pathname === '/login'
-
   const handleLogout = async () => {
     await signOut({
       fetchOptions: {

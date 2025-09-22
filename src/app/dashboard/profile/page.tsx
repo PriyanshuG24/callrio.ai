@@ -1,0 +1,110 @@
+'use client';
+
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Calendar, Mail, ArrowBigLeft } from "lucide-react";
+import { signOut } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+import { useSession } from "@/lib/auth-client";
+import { useEffect, useState } from "react";
+import { disconnectStreamClient } from "@/lib/stream-client";
+import Link from "next/link";
+
+export default function ProfilePage() {
+  const router = useRouter();
+  const { data: session, isPending } = useSession();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (isPending) {
+      return;
+    }
+    if (!session?.user) {
+      router.push('/');
+    } else if (session?.user) {
+      setIsLoading(false);
+    }
+  }, [session?.user, router]);
+
+  const initials = session?.user?.name
+    ?.split(' ')
+    .map(name => name[0])
+    .join('')
+    .toUpperCase() || 'U';
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      await disconnectStreamClient();
+      router.push('/');
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
+
+  if (isLoading || !session?.user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  return (
+    <main className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-900">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">Your Profile</h1>
+          </div>
+          <Button asChild className="w-full md:w-auto hover:bg-gray-500 dark:hover:bg-gray-800">
+            <Link href="/dashboard" className="flex items-center gap-2">
+              <ArrowBigLeft className="h-4 w-4" />
+              Go to Dashboard
+            </Link>
+          </Button>
+        </div>
+
+        <div className="grid gap-6">
+          <Card className="overflow-hidden">
+            <div className="h-24 relative animated-gradient">
+              <div className="absolute -bottom-12 left-6">
+                <Avatar className="h-24 w-24 border-4 border-white dark:border-gray-900">
+                  <AvatarImage src={session.user.image || ''} alt={session.user.name || 'User'} />
+                  <AvatarFallback className="text-2xl font-semibold text-white animated-gradient-avatar">
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+            </div>
+            <div className="pt-16 px-6 pb-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{session.user.name}</h2>
+                  <div className="flex items-center text-muted-foreground mt-1">
+                    <Mail className="h-4 w-4 mr-2" />
+                    <span>{session.user.email}</span>
+                  </div>
+                  <div className="flex items-center text-muted-foreground mt-1">
+                    <Calendar className="h-4 w-4 mr-2" />
+                    <span>Member since {new Date(session.user.createdAt || new Date()).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}</span>
+                  </div>
+                </div>
+                <div>
+                  <Button 
+                    onClick={handleLogout}
+                    className="w-full md:w-auto hover:bg-gray-500 dark:hover:bg-gray-800 flex items-center gap-2"
+                  >
+                    <ArrowBigLeft className="h-4 w-4" />
+                    Logout
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </div>
+    </main>
+  );
+}

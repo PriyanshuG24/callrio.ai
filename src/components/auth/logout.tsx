@@ -1,16 +1,22 @@
-'use client'
-import { signOut } from "@/lib/auth-client";
-import { LogOut } from "lucide-react";
-import { redirect } from "next/navigation";
-export default function Logout() {
-    const handleSignOut=async()=>{
-        await signOut();
-        redirect("/auth");
-    }
-    return (
-        <button onClick={handleSignOut} className="cursor-pointer flex items-center gap-2">
-            <LogOut/>
-            Logout!
-        </button>
-    )
+// src/components/auth/logout-button.tsx
+'use client';
+
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { signOut } from '@/lib/auth-client';
+
+export function LogoutButton() {
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await signOut();
+    router.replace('/');
+    router.refresh(); // Refresh to update the auth state
+  };
+
+  return (
+    <Button variant="ghost" onClick={handleLogout} className='cursor-pointer flex items-center gap-2'>
+      Logout
+    </Button>
+  );
 }

@@ -17,6 +17,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "CallRio - Video Conferencing",
   description: "Seamless video conferencing experience",
+  icons: {
+    icon: '/images/smart.png',
+  },
 };
 
 export default function RootLayout({

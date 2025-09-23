@@ -7,7 +7,7 @@ import { Menu, X } from 'lucide-react';
 import { useState} from 'react';
 import { useSession } from '@/lib/auth-client';
 import { ThemeToggle } from '../theme/theme-toggle';
-
+import Image from 'next/image';
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
@@ -29,6 +29,13 @@ export function Header() {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <Link href="/" className="flex items-center">
+              <Image
+                src="/images/smart.png"
+                alt="Logo"
+                width={28}
+                height={28}
+                className="mr-2"
+              />
               <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
                 CallRio.ai
               </span>

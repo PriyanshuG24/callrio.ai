@@ -27,8 +27,11 @@ export default function SchedulePage() {
   const handleCreateMeeting = async() => {
     try {
       setIsLoading(true);
-      await createMeeting(false);
-      const link = `${window.location.origin}/dashboard/meeting/${callDetails?.id}`;
+      const newMeeting = await createMeeting(false);
+      if (!newMeeting?.id) {
+        throw new Error("Meeting ID not returned");
+      }
+      const link = `${window.location.origin}/dashboard/meeting/${newMeeting.id}`;
       setMeetingLink(link);
       setShowDialog(true);
     } catch (error) {

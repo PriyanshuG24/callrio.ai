@@ -175,6 +175,21 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.3s ease;
 }
+.glass-card {
+  @apply rounded-2xl bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl shadow-lg border border-white/20;
+}
+
+.glass-card-footer {
+  @apply rounded-b-none rounded-t-xl bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl shadow-lg border border-white/20;
+}
+
+.glass-card-sidebar {
+  @apply rounded-l-none rounded-r-xl bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl shadow-lg border border-white/20;
+}
+
+.glass-button {
+  @apply rounded-xl bg-white/40 backdrop-blur-md shadow-md hover:bg-white/60 transition;
+}
 
 .glass-button:hover {
   background: rgba(255, 255, 255, 0.2);

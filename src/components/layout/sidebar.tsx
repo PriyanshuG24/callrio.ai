@@ -28,8 +28,8 @@ export function Sidebar({ isCollapsed, onToggleCollapse }: { isCollapsed: boolea
   return (
     <aside
       className={cn(
-        'fixed left-0 top-0 h-screen bg-white dark:bg-gray-900 shadow-xl z-50 transition-all duration-300 ease-in-out flex flex-col',
-        isCollapsed ? 'w-20 ' : 'w-64 '
+        'fixed left-0 top-0 h-screen  z-50 transition-all duration-300 ease-in-out flex flex-col glass-card-sidebar',
+        isCollapsed ? 'w-20  ' : 'w-64 '
       )}
     >
      
@@ -39,11 +39,7 @@ export function Sidebar({ isCollapsed, onToggleCollapse }: { isCollapsed: boolea
           className="h-6 w-6 rounded-full border border-gray-300 bg-white dark:bg-gray-700 shadow-md flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
           aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
-          {isCollapsed ? (
-            <ChevronRight className="h-4 w-4 text-gray-600 dark:text-gray-300" />
-          ) : (
-            <ChevronLeft className="h-4 w-4 text-gray-600 dark:text-gray-300" />
-          )}
+          <ChevronRight className="h-4 w-4 text-gray-600 dark:text-gray-300" />
         </button>
       </div>
 

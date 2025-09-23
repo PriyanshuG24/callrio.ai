@@ -4,25 +4,21 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { Video, Users, Zap } from 'lucide-react';
+import { Video, Users, Zap, Quote} from 'lucide-react';
 import { useSession } from '@/lib/auth-client';
-
+import Link from 'next/link';
 
 export default function Home() {
   const router = useRouter();
   const { data: session, isPending } = useSession();
 
   useEffect(() => {
-    if (isPending) {
+    if (session && !isPending) {
       router.replace('/dashboard');
-
     }
-  }, [isPending, router]);
+  }, [session, isPending, router]);
 
-  if (isPending) {
-    return null; 
-  }
-
+  if (isPending) return null;
 
   const features = [
     {
@@ -42,12 +38,30 @@ export default function Home() {
     }
   ];
 
+  const testimonials = [
+    {
+      name: "Sarah Johnson",
+      role: "Product Manager",
+      feedback: "The video quality is amazing and the platform is super easy to use!"
+    },
+    {
+      name: "David Lee",
+      role: "Software Engineer",
+      feedback: "Finally a video platform that doesn’t lag. My team loves it!"
+    },
+    {
+      name: "Emily Carter",
+      role: "Designer",
+      feedback: "The UI feels so smooth and modern. Highly recommended!"
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Hero Section */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-grid-white/[0.05] dark:bg-grid-gray-800/[0.2]"></div>
-        
+       
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
           <div className="text-center">
             <motion.h1 
@@ -120,6 +134,34 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Testimonials Section */}
+      <section className="relative py-20 bg-gradient-to-r from-blue-50/30 to-purple-50/30 dark:from-gray-800/50 dark:to-gray-900/50 backdrop-blur-lg">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-12 text-gray-900 dark:text-white">
+            Loved by teams worldwide
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {testimonials.map((t, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.2 }}
+                className="glass-card p-6 flex flex-col items-center"
+              >
+                <Quote className="w-8 h-8 text-blue-500 mb-4" />
+                <p className="text-gray-600 dark:text-gray-300 italic mb-4">
+                  "{t.feedback}"
+                </p>
+                <span className="font-semibold text-gray-900 dark:text-white">{t.name}</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">{t.role}</span>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-20">
         <div className="max-w-4xl mx-auto text-center glass-card p-12">
@@ -133,10 +175,24 @@ export default function Home() {
             onClick={() => router.push('/register')}
             className="glass-button px-8 py-6 text-lg font-semibold text-black"
           >
-            Create Free Account
+            Create Instant Meeting
           </Button>
         </div>
       </section>
+
+      {/* Footer Section */}
+      <footer className="relative py-10 glass-card-footer">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+          <p className="text-gray-600 dark:text-gray-400 text-sm">
+            © {new Date().getFullYear()} CallRio.ai All rights reserved.
+          </p>
+          <div className="flex gap-6 text-gray-600 dark:text-gray-400 text-sm">
+            <Link href="#" className="hover:text-blue-500 transition">Privacy Policy</Link>
+            <Link href="#" className="hover:text-blue-500 transition">Terms of Service</Link>
+            <Link href="#" className="hover:text-blue-500 transition">Support</Link>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

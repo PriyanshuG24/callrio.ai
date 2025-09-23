@@ -3,29 +3,14 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Calendar, Mail, ArrowBigLeft } from "lucide-react";
-import { signOut } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
+import { Calendar, Mail } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
-import { useEffect, useState } from "react";
-import { disconnectStreamClient } from "@/lib/stream-client";
 import Link from "next/link";
+import { LogoutButton } from "@/components/auth/logout";
+import { LayoutDashboardIcon } from "lucide-react";
 
 export default function ProfilePage() {
-  const router = useRouter();
   const { data: session, isPending } = useSession();
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    if (isPending) {
-      return;
-    }
-    if (!session?.user) {
-      router.push('/');
-    } else if (session?.user) {
-      setIsLoading(false);
-    }
-  }, [session?.user, router]);
 
   const initials = session?.user?.name
     ?.split(' ')
@@ -33,17 +18,7 @@ export default function ProfilePage() {
     .join('')
     .toUpperCase() || 'U';
 
-  const handleLogout = async () => {
-    try {
-      await signOut();
-      await disconnectStreamClient();
-      router.push('/');
-    } catch (error) {
-      console.error('Error during logout:', error);
-    }
-  };
-
-  if (isLoading || !session?.user) {
+  if (isPending || !session?.user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
@@ -52,22 +27,22 @@ export default function ProfilePage() {
   }
 
   return (
-    <main className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-900">
+    <main className="h-full glass-card px-4 py-12 px-6 md:px-8 md:py-16 sm:py-8 sm:px-4">
       <div className="max-w-4xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">Your Profile</h1>
           </div>
-          <Button asChild className="w-full md:w-auto hover:bg-gray-500 dark:hover:bg-gray-800">
+          <Button variant="outline" className="cursor-pointer flex items-center gap-2 hover:bg-gray-500 dark:hover:bg-gray-800">
             <Link href="/dashboard" className="flex items-center gap-2">
-              <ArrowBigLeft className="h-4 w-4" />
+              <LayoutDashboardIcon className="h-4 w-4" />
               Go to Dashboard
             </Link>
           </Button>
         </div>
 
-        <div className="grid gap-6">
-          <Card className="overflow-hidden">
+        <div className="grid gap-6 ">
+          <Card className="overflow-hidden glass-card">
             <div className="h-24 relative animated-gradient">
               <div className="absolute -bottom-12 left-6">
                 <Avatar className="h-24 w-24 border-4 border-white dark:border-gray-900">
@@ -91,14 +66,8 @@ export default function ProfilePage() {
                     <span>Member since {new Date(session.user.createdAt || new Date()).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}</span>
                   </div>
                 </div>
-                <div>
-                  <Button 
-                    onClick={handleLogout}
-                    className="w-full md:w-auto hover:bg-gray-500 dark:hover:bg-gray-800 flex items-center gap-2"
-                  >
-                    <ArrowBigLeft className="h-4 w-4" />
-                    Logout
-                  </Button>
+                <div >
+                  <LogoutButton />
                 </div>
               </div>
             </div>

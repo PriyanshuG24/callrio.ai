@@ -23,7 +23,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <StreamVideoProvider>
       <div className="flex h-screen">
         <div
-          className={`${isSidebarCollapsed ? "w-16" : "w-64"} transition-all duration-300`}
+          className={`${isSidebarCollapsed ? "w-16 mr-4" : "w-64"} transition-all duration-300`}
         >
           <Sidebar isCollapsed={isSidebarCollapsed} onToggleCollapse={toggleSidebar} />
         </div>

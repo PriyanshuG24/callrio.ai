@@ -8,9 +8,9 @@ to major platforms such as YouTube, LinkedIn, and Spotify.
 ### Core Features
 - 🎥 **Meetings** – Host secure online meetings with admin & producer controls.
 - 📼 **Recording** – Store and manage meeting recordings in the cloud.
-- 🤖 **AI Transcription** – Auto-generate transcripts with Whisper/AI.
-- ✂️ **Smart Clips** – Create highlight clips using AI & ffmpeg.
-- 🚀 **Publishing** – Push recordings & clips directly to external platforms.
+- 🤖 **AI Transcription** – Auto-generate transcripts with Whisper/AI(Coming Soon).
+- ✂️ **Smart Clips** – Create highlight clips using AI & ffmpeg(Coming Soon).
+- 🚀 **Publishing** – Push recordings & clips directly to external platforms(Coming Soon).
 - 🔐 **Role Management** – Admin, Producer, Guest access control.
 
 ### Tech Stack

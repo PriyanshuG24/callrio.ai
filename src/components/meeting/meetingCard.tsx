@@ -167,15 +167,15 @@ const MeetingCard = ({ meeting, type }: MeetingCardProps) => {
     // Ended meeting
     // Update the renderFooter function's ended meeting section
 if (type === 'ended') {
-  return (
-    <div className="mt-auto p-4 border-t">
-      <div className="flex items-center justify-center text-sm text-muted-foreground py-2">
-        <XCircle className="h-4 w-4 mr-2 text-red-500" />
-        <span>This meeting has ended</span>
-      </div>
-    </div>
-  );
-}
+      return (
+        <div className="mt-auto p-4 border-t">
+          <div className="flex items-center justify-center text-sm text-muted-foreground py-2">
+            <XCircle className="h-4 w-4 mr-2 text-red-500" />
+            <span>This meeting has ended</span>
+          </div>
+        </div>
+      );
+    }
 
     // Upcoming meeting
     return (

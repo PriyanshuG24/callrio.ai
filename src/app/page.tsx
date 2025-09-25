@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import { Video, Users, Zap, Quote} from 'lucide-react';
 import { useSession } from '@/lib/auth-client';
 import Link from 'next/link';
+import Loader from '@/components/ui/loader';
 
 export default function Home() {
   const router = useRouter();
@@ -16,9 +17,9 @@ export default function Home() {
     if (session && !isPending) {
       router.replace('/dashboard');
     }
-  }, [session, isPending, router]);
+  }, [session, isPending]);
 
-  if (isPending) return null;
+
 
   const features = [
     {

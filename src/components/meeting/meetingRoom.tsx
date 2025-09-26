@@ -18,11 +18,15 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from '../ui/dropdown-menu';
-import { LayoutList, Users, Loader2 } from 'lucide-react';
+import { LayoutList, Users, Loader2, ChartBarIcon } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { EndCallButton } from './endCallButton';
 import { toast } from 'sonner';
+import { useSession } from '@/lib/auth-client';
+import { useMeetingChat } from '@/hooks/useMeetingChat'; 
+import {MeetingChat} from '@/components/meeting/meetingChat';
+
 
 type CallLayoutType = 'grid' | 'speaker-left' | 'speaker-right';
 
@@ -31,6 +35,7 @@ const MeetingRoom = () => {
   const isPersonal = !!searchParams.get('personal');
   const [layout, setLayout] = useState<CallLayoutType>('speaker-left');
   const [showParticipants, setShowParticipants] = useState(false);
+  const [showParticipantsChat, setShowParticipantsChat] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
 
   const { useCallCallingState, useParticipants, useLocalParticipant } = useCallStateHooks();
@@ -40,6 +45,13 @@ const MeetingRoom = () => {
 
   const router = useRouter();
   const call = useCall();
+  const { data: user } = useSession();
+
+  // Chat hook for this meeting
+  const otherUserIds = participants
+    .filter((p) => p.userId !== user?.user.id)
+    .map((p) => p.userId || '');
+  const channel = useMeetingChat(call?.id || '', otherUserIds);
 
   const CallLayout = useCallback(() => {
     switch (layout) {
@@ -62,17 +74,14 @@ const MeetingRoom = () => {
     });
   }, [participants, call]);
 
-  // Cleanup local media on unmount (do NOT call call.leave() automatically here)
+  // Cleanup local media on unmount
   useEffect(() => {
     return () => {
       (async () => {
         try {
           if (!call) return;
-
-          // best-effort: disable camera/mic via SDK
           await Promise.allSettled([call.camera?.disable(), call.microphone?.disable()]);
 
-          // Stop local media tracks if present
           const vs = localParticipant?.videoStream;
           if (vs && typeof vs.getTracks === 'function') {
             vs.getTracks().forEach((t: MediaStreamTrack) => t.stop());
@@ -94,9 +103,7 @@ const MeetingRoom = () => {
     const onEnded = async () => {
       try {
         await Promise.allSettled([call.camera?.disable(), call.microphone?.disable()]);
-      } catch {
-        /* ignore */
-      }
+      } catch {}
       if (!isRedirecting) {
         setIsRedirecting(true);
         toast.info('The meeting has ended');
@@ -143,6 +150,7 @@ const MeetingRoom = () => {
           <CallLayout />
         </div>
 
+        {/* Participants list */}
         <div
           className={cn(
             'fixed right-2 bottom-6 hidden w-[400px] h-[calc(100vh-64px)]',
@@ -158,8 +166,16 @@ const MeetingRoom = () => {
         >
           <CallParticipantsList onClose={() => setShowParticipants(false)} />
         </div>
+
+        {/* Chat panel */}
+        {showParticipantsChat && channel && (
+          <div className="fixed right-2 bottom-6 w-[400px] h-[calc(100vh-64px)] bg-[#1c1f2e]/80 backdrop-blur-md rounded-xl overflow-hidden ">
+            <MeetingChat channel={channel} />
+          </div>
+        )}
       </div>
 
+      {/* Controls */}
       <div
         className={cn(
           'fixed bottom-4 left-1/2 -translate-x-1/2',
@@ -221,7 +237,7 @@ const MeetingRoom = () => {
 
         <div className="flex-shrink-0">
           <Button
-            onClick={() => setShowParticipants((prev) => !prev)}
+            onClick={() => (setShowParticipants((prev) => !prev), setShowParticipantsChat(false))}
             variant="default"
             size="icon"
             className={cn(
@@ -233,6 +249,22 @@ const MeetingRoom = () => {
             )}
           >
             <Users size={20} className="text-white" />
+          </Button>
+        </div>
+        <div className="flex-shrink-0">
+          <Button
+            onClick={() => (setShowParticipantsChat((prev) => !prev), setShowParticipants(false))}
+            variant="default"
+            size="icon"
+            className={cn(
+              'rounded-full bg-[#19232d] hover:bg-[#4c535b]',
+              'h-10 w-10 p-0',
+              'transition-colors duration-200',
+              'focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary',
+              showParticipantsChat && 'bg-[#4c535b]'
+            )}
+          >
+            <ChartBarIcon size={20} className="text-white" />
           </Button>
         </div>
 

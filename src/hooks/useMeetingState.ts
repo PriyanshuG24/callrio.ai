@@ -1,4 +1,3 @@
-// src/hooks/useMeetingState.ts
 'use client';
 import { useState } from 'react';
 import { Call } from '@stream-io/video-react-sdk';
@@ -8,21 +7,21 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 interface MeetingState {
-  dateTime: Date | null;  
+  dateTime: Date | null;
   description: string;
-  link: string; 
+  link: string;
 }
 
 export const useMeetingState = () => {
   const router = useRouter();
   const [values, setValues] = useState<MeetingState>({
     dateTime: new Date() || null,
-    description: "",
-    link: "",
+    description: '',
+    link: '',
   });
-  
+
   const [callDetails, setCallDetails] = useState<Call>();
-  const { data: user, isPending } = useSession();
+  const { data: user } = useSession();
   const client = useStreamVideoClient();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -36,7 +35,7 @@ export const useMeetingState = () => {
     try {
       const id = crypto.randomUUID();
       const call = client.call('default', id);
-      
+
       await call.getOrCreate({
         data: {
           starts_at: values.dateTime?.toISOString() || new Date().toISOString(),
@@ -54,7 +53,7 @@ export const useMeetingState = () => {
       } else if (!isInstant) {
         router.push('/dashboard/schedule');
       }
-      
+
       return call;
     } catch (error) {
       console.error('Error creating meeting:', error);
@@ -71,8 +70,8 @@ export const useMeetingState = () => {
     callDetails,
     setCallDetails,
     user,
-    isPending,
     client,
-    createMeeting
+    isLoading,
+    createMeeting,
   };
 };

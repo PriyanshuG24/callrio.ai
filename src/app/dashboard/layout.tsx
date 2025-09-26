@@ -2,6 +2,7 @@
 'use client'
 
 import { StreamVideoProvider } from "@/providers/streamClientProvider";
+import { StreamChatProvider } from "@/providers/streamChatClientProvider";
 import { Sidebar } from "@/components/layout/sidebar";
 import { useState } from "react";
 import { useSession } from "@/lib/auth-client";
@@ -22,6 +23,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <StreamVideoProvider>
+      <StreamChatProvider>
       <div className="flex h-screen">
         <div
           className={`${isSidebarCollapsed ? "w-16 mr-4" : "w-64"} transition-all duration-300 ${!match ? "hidden" : ""}`}
@@ -32,6 +34,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {children}
         </main>
       </div>
+      </StreamChatProvider>
     </StreamVideoProvider>
   );
 }

@@ -18,7 +18,6 @@ export const EndCallButton = () => {
     localParticipant.userId === call.state.createdBy.id;
 
   if (!isMeetingOwner) return null;
-
   const endCallForEveryone = async () => {
     try {
       if (!call) return;

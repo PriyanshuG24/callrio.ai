@@ -1,3 +1,4 @@
+// generate-client-token.ts
 'use server';
 
 import { StreamChat } from 'stream-chat';

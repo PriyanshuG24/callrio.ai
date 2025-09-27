@@ -1,10 +1,9 @@
 'use client'
 import React from 'react'
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { useGetCalls } from '@/hooks/useGetCalls'
 import { Call, CallRecording } from '@stream-io/video-react-sdk';
-import MeetingCard from './meetingCard';    
+import MeetingCardMain from './meetingCard/meetingCardMain';    
 import Loader from '../ui/loader';
 type CallListType = "upcoming" | "ended"| "recordings";
 interface CallListProps {
@@ -13,7 +12,6 @@ interface CallListProps {
 const callList = ({type}: CallListProps) => {
     const {callRecordings,loading,endedCalls,upcomingCalls}=useGetCalls()
     const [recordings,setRecordings]=React.useState<CallRecording[]>([])
-    const router=useRouter()
     const getCalls=()=>{
         switch(type){
             case "upcoming":
@@ -69,7 +67,7 @@ const callList = ({type}: CallListProps) => {
   return (
     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5'>
         {calls && calls.length > 0 ? calls.map((meeting:Call|CallRecording)=>(
-            <MeetingCard 
+            <MeetingCardMain 
             key={(meeting as Call).id || (meeting as CallRecording).filename}
             meeting={(meeting as Call)}
             type={type}

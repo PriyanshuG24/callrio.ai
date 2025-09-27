@@ -37,17 +37,13 @@ const MeetingRoom = () => {
   const [showParticipants, setShowParticipants] = useState(false);
   const [showParticipantsChat, setShowParticipantsChat] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
-
   const { useCallCallingState, useParticipants, useLocalParticipant } = useCallStateHooks();
   const callingState = useCallCallingState();
   const participants = useParticipants();
   const localParticipant = useLocalParticipant();
-
   const router = useRouter();
   const call = useCall();
   const { data: user } = useSession();
-
-  // Chat hook for this meeting
   const otherUserIds = participants
     .filter((p) => p.userId !== user?.user.id)
     .map((p) => p.userId || '');
@@ -74,7 +70,6 @@ const MeetingRoom = () => {
     });
   }, [participants, call]);
 
-  // Cleanup local media on unmount
   useEffect(() => {
     return () => {
       (async () => {
@@ -108,6 +103,7 @@ const MeetingRoom = () => {
         setIsRedirecting(true);
         toast.info('The meeting has ended');
         setTimeout(() => {
+          setIsRedirecting(false);
           router.push('/dashboard');
           router.refresh();
         }, 1500);
@@ -194,10 +190,8 @@ const MeetingRoom = () => {
                   await call.camera.disable();
                   await call.microphone.disable();
                 }
-                router.push('/dashboard');
               } catch (error) {
                 console.error('Error leaving call:', error);
-                router.push('/dashboard');
               }
             }}
           />

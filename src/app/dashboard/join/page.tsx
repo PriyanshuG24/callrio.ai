@@ -35,22 +35,19 @@ export default function JoinPage() {
       setError('Please enter a meeting link');
       return;
     }
-
-    // Extract meeting ID from URL if full URL is pasted
     let meetingId = meetingLink;
     try {
       const url = new URL(meetingLink);
       meetingId = url.pathname.split('/').pop() || meetingLink;
+      
     } catch (e) {
-      // If it's not a valid URL, assume it's just the meeting ID
+
     }
 
     setIsLoading(true);
     
-    // Here you would typically validate the meeting ID with your backend
-    // For now, we'll just redirect to the meeting page
     setTimeout(() => {
-      router.push(`/meeting/${meetingId}`);
+      router.push(`/dashboard/meeting/${meetingId}`);
     }, 500);
   };
 
@@ -72,7 +69,7 @@ export default function JoinPage() {
                     <Input
                     id="meeting-link"
                     placeholder="Paste meeting link or ID"
-                    className="w-full pr-20" // Add right padding for the paste button
+                    className="w-full pr-20"
                     value={meetingLink}
                     onChange={(e) => setMeetingLink(e.target.value)}
                     />

@@ -5,13 +5,9 @@ import { useEffect, useState } from 'react';
 import { useSession } from '@/lib/auth-client';
 import { getChatClient } from '@/lib/chat-client';
 import Loader from '@/components/ui/loader';
-import { useTheme } from 'next-themes';
-import '../layout.css';
 export const StreamChatProvider = ({ children }: { children: React.ReactNode }) => {
   const [chatClient, setChatClient] = useState<any>(null);
   const { data: session, isPending } = useSession();
-  const { theme } = useTheme();
-
   useEffect(() => {
     if (isPending || !session?.user) return;
 
@@ -34,11 +30,7 @@ export const StreamChatProvider = ({ children }: { children: React.ReactNode }) 
   if (isPending || !chatClient) return <Loader />;
 
   return (
-    <Chat 
-      client={chatClient}
-      theme='dark'
-      
-    >
+    <Chat client={chatClient}>
       {children}
     </Chat>
   );

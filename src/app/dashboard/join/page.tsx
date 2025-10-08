@@ -47,7 +47,7 @@ export default function JoinPage() {
     setIsLoading(true);
     
     setTimeout(() => {
-      router.push(`/dashboard/meeting/${meetingId}`);
+      router.replace(`/dashboard/meeting/${meetingId}`);
     }, 500);
   };
 

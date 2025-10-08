@@ -60,19 +60,12 @@ export default function LoginForm() {
   const handleGoogleSignIn = async () => {
     try {
       setIsGoogleLoading(true);
-  
-      // Trigger Google OAuth login
       const { error } = await signIn.social({
         provider: 'google',
-        callbackURL: '/dashboard', // redirect user to dashboard after login
+        callbackURL: '/dashboard', 
       });
-  
       if (error) throw error;
-  
-      // Optional: show a success toast
       toast.success('Logged in successfully! Redirecting...');
-  
-      // Use replace to prevent going back to login page
       router.replace('/dashboard');
   
     } catch (error) {

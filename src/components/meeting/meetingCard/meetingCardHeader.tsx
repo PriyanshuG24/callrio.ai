@@ -24,7 +24,7 @@ export const MeetingCardHeader = ({ meeting, type }: MeetingCardHeaderProps) => 
           </span>
         )}
         {type === "ended" && (
-          <span className="flex items-center text-xs text-green-500 bg-green-50 px-2 py-1 rounded-full">
+          <span className="flex items-center text-xs text-green-800 bg-green-50 px-2 py-1 rounded-full">
             <CheckCircle className="h-3 w-3 mr-1" />
             Completed
           </span>

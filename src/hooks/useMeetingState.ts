@@ -38,20 +38,29 @@ export const useMeetingState = () => {
 
       await call.getOrCreate({
         data: {
+          settings_override: {
+            transcription: {
+              mode: 'auto-on',
+              closed_caption_mode: 'auto-on',
+              language: 'en',
+            },
+          },
           starts_at: values.dateTime?.toISOString() || new Date().toISOString(),
           custom: {
-            description: values.description || (isInstant ? 'Instant Meeting' : 'Scheduled Meeting'),
+            description:
+              values.description || (isInstant ? 'Instant Meeting' : 'Scheduled Meeting'),
           },
         },
       });
+      
 
       setCallDetails(call);
       toast.success(`Meeting ${isInstant ? 'created' : 'scheduled'} successfully!`);
 
       if (isInstant && !values.description) {
-        router.push(`/dashboard/meeting/${id}`);
+        router.replace(`/dashboard/meeting/${id}`);
       } else if (!isInstant) {
-        router.push('/dashboard/schedule');
+        router.replace('/dashboard/schedule');
       }
 
       return call;

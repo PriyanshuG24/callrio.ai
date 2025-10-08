@@ -51,7 +51,7 @@ export default function RegisterForm() {
     }
     
     toast.success('Account created successfully. Please login.');
-    router.push('/login?registered=true');
+    router.replace('/login?registered=true');
     } catch (error) {
     console.error('Registration failed:', error);
     toast.error('An error occurred during registration.');

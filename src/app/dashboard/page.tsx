@@ -1,7 +1,5 @@
 // src/app/dashboard/page.tsx
 'use client';
-
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Calendar, Video, Users, Clock, FileText, Plus, Combine} from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,27 +7,29 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useSession } from '@/lib/auth-client';
 import { ThemeToggle } from '@/components/theme/theme-toggle';
-
+import { RefreshButton } from '@/components/theme/refresh-button';
+import {useCallStore} from '@/store/callStore'
+import { getMeetingDuration,formatTime } from '@/lib/utils';
 export default function DashboardPage() {
   const router = useRouter();
   const { data: session } = useSession();
-  const [activeTab, setActiveTab] = useState('overview');
-
-  // Mock data
-  const upcomingMeetings = [
-    { id: 1, title: 'Team Standup', time: '10:00 AM', date: 'Today', participants: 5 },
-    { id: 2, title: 'Client Call', time: '2:30 PM', date: 'Tomorrow', participants: 3 },
-  ];
-
-  const recentRecordings = [
-    { id: 1, title: 'Product Demo', date: '2 hours ago', duration: '45:23' },
-    { id: 2, title: 'Team Retrospective', date: '1 day ago', duration: '1:22:10' },
-  ];
+  const {upcomingCalls,callRecordings} = useCallStore()
+  const upcomingMeetings = upcomingCalls.slice(0, 2).map((call) => ({
+    id: call.id,
+    title: call.state.custom?.description || 'Unknown Meeting',
+    time: call.state.startsAt?.toLocaleTimeString() || 'Unknown Time',
+    date: call.state.startsAt?.toLocaleDateString() || 'Unknown Date',
+  }));
+  const recentRecordings = callRecordings.slice(0, 4).map((recording) => ({
+    title: recording.filename || 'Unknown Recording',
+    date: formatTime(recording.start_time) || 'Unknown Date',
+    duration: getMeetingDuration(recording.start_time, recording.end_time) || 'Unknown Duration',
+  }));
 
   const quickActions = [
-    { icon: <Video className="w-5 h-5" />, label: 'Instant Meeting', action: () => router.push('/dashboard/create-meeting') },
-    { icon: <Combine className="w-5 h-5" />, label: 'Join Meeting', action: () => router.push('/dashboard/join') },
-    { icon: <Calendar className="w-5 h-5" />, label: 'Schedule Meeting', action: () => router.push('/dashboard/schedule') },
+    { icon: <Video className="w-5 h-5" />, label: 'Instant Meeting', action: () => router.replace('/dashboard/create-meeting') },
+    { icon: <Combine className="w-5 h-5" />, label: 'Join Meeting', action: () => router.replace('/dashboard/join') },
+    { icon: <Calendar className="w-5 h-5" />, label: 'Schedule Meeting', action: () => router.replace('/dashboard/schedule') },
   ];
 
   return (
@@ -42,6 +42,7 @@ export default function DashboardPage() {
         </div>
         <div className="flex items-center gap-4 w-full md:w-auto">
           <ThemeToggle/>
+          <RefreshButton/>
         </div>
       </div>
 
@@ -59,13 +60,11 @@ export default function DashboardPage() {
           </Button>
         ))}
       </div>
-
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="meetings">Meetings</TabsTrigger>
           <TabsTrigger value="recordings">Recordings</TabsTrigger>
-          <TabsTrigger value="team">Team</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
@@ -120,7 +119,7 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {upcomingMeetings.map((meeting) => (
+                  {upcomingMeetings.slice(0, 2).map((meeting) => (
                     <div key={meeting.id} className="flex items-center p-4 border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer">
                       <div className="flex-shrink-0 h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center mr-4">
                         <Video className="h-6 w-6 text-primary" />
@@ -128,7 +127,7 @@ export default function DashboardPage() {
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">{meeting.title}</p>
                         <p className="text-sm text-muted-foreground">
-                          {meeting.time} • {meeting.date} • {meeting.participants} participants
+                          {meeting.time} • {meeting.date} 
                         </p>
                       </div>
                       <Button variant="ghost" size="sm" className="ml-2">
@@ -136,10 +135,18 @@ export default function DashboardPage() {
                       </Button>
                     </div>
                   ))}
-                  <Button variant="ghost" className="w-full mt-2" onClick={() => router.push('/meeting/schedule')}>
+                  <Button variant="ghost" className="w-full mt-2" onClick={() => router.replace('/dashboard/schedule')}>
                     <Plus className="h-4 w-4 mr-2" />
                     Schedule New Meeting
                   </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full mt-2 text-sm bg-gray-800"
+                    onClick={() => router.replace('/dashboard/schedule')}
+                    >
+                    View More
+                  </Button>
+                  
                 </div>
               </CardContent>
             </Card>
@@ -156,7 +163,7 @@ export default function DashboardPage() {
                 <div className="space-y-3">
                     {recentRecordings.map((recording) => (
                     <div 
-                        key={recording.id} 
+                        key={recording.title} 
                         className="flex items-center p-4 border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer"
                     >
                         <div className="flex-shrink-0 h-10 w-10 bg-primary/10 rounded flex items-center justify-center mr-3">
@@ -190,7 +197,7 @@ export default function DashboardPage() {
                     <Button 
                     variant="ghost" 
                     className="w-full mt-2 text-sm"
-                    onClick={() => router.push('/recordings')}
+                    onClick={() => router.replace('/dashboard/recordings')}
                     >
                     View All Recordings
                     </Button>
@@ -207,24 +214,43 @@ export default function DashboardPage() {
               <CardTitle>Your Meetings</CardTitle>
               <CardDescription>View and manage all your scheduled meetings</CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="flex justify-end mb-4">
-                <Button onClick={() => router.push('/meeting/schedule')}>
+            {upcomingMeetings.length > 0 ? (
+              <CardContent>
+              <div className="space-y-4">
+                {upcomingMeetings.slice(0, 4).map((meeting) => (
+                  <div key={meeting.id} className="flex items-center p-4 border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer">
+                    <div className="flex-shrink-0 h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center mr-4">
+                      <Video className="h-6 w-6 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{meeting.title}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {meeting.time} • {meeting.date} 
+                      </p>
+                    </div>
+                    <Button variant="ghost" size="sm" className="ml-2">
+                      Join
+                    </Button>
+                  </div>
+                ))}
+                <Button variant="ghost" className="w-full mt-2" onClick={() => router.replace('dashboard/schedule')}>
                   <Plus className="h-4 w-4 mr-2" />
-                  Schedule Meeting
+                  Schedule New Meeting
                 </Button>
               </div>
-              {/* Add meetings table/list here */}
-              <div className="text-center py-8 text-muted-foreground">
-                <Calendar className="h-12 w-12 mx-auto mb-2" />
-                <p>No upcoming meetings scheduled</p>
-              </div>
-            </CardContent>
+          </CardContent>
+            ) : (
+              <CardContent>
+                <div className="text-center py-8 text-muted-foreground">
+                  <Video className="h-12 w-12 mx-auto mb-2" />
+                  <p>No upcoming meetings scheduled</p>
+                </div>
+              </CardContent>
+            )}
           </Card>
         </TabsContent>
 
         <TabsContent value="recordings" className="space-y-4 ">
-          
           <Card>
             <CardHeader>
               <CardTitle>Your Recordings</CardTitle>
@@ -235,31 +261,6 @@ export default function DashboardPage() {
               <div className="text-center py-8 text-muted-foreground">
                 <Video className="h-12 w-12 mx-auto mb-2" />
                 <p>No recordings available</p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="team" className="space-y-4">
-          {/* Team content */}
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <div>
-                  <CardTitle>Team Members</CardTitle>
-                  <CardDescription>Manage your team members and permissions</CardDescription>
-                </div>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Member
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {/* Add team members list here */}
-              <div className="text-center py-8 text-muted-foreground">
-                <Users className="h-12 w-12 mx-auto mb-2" />
-                <p>No team members added yet</p>
               </div>
             </CardContent>
           </Card>

@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 import { Video, Users, Zap, Quote} from 'lucide-react';
 import { useSession } from '@/lib/auth-client';
 import Link from 'next/link';
-import Loader from '@/components/ui/loader';
+import {Skeleton} from '@/components/ui/skeleton';
 
 export default function Home() {
   const router = useRouter();
@@ -56,7 +56,9 @@ export default function Home() {
       feedback: "The UI feels so smooth and modern. Highly recommended!"
     }
   ];
-
+  if(session && !isPending){
+    return <Skeleton className="h-screen"/>
+  }
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Hero Section */}
@@ -90,14 +92,14 @@ export default function Home() {
               className="flex flex-col sm:flex-row justify-center gap-4"
             >
               <Button 
-                onClick={() => router.push('/register')}
+                onClick={() => router.replace('/register')}
                 className="glass-button px-8 py-6 text-lg font-semibold text-black"
               >
                 Get Started Free
               </Button>
               <Button 
                 variant="outline" 
-                onClick={() => router.push('/login')}
+                onClick={() => router.replace('/login')}
                 className="px-8 py-6 text-lg font-semibold text-black"
               >
                 Sign In
@@ -173,7 +175,7 @@ export default function Home() {
             Join thousands of satisfied users who trust our platform for their video conferencing needs.
           </p>
           <Button 
-            onClick={() => router.push('/register')}
+            onClick={() => router.replace('/register')}
             className="glass-button px-8 py-6 text-lg font-semibold text-black"
           >
             Create Instant Meeting

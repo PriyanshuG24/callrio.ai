@@ -9,17 +9,31 @@ import MeetingRoom from '@/components/meeting/meetingRoom';
 import MeetingSetup from '@/components/meeting/meetingSetup';
 import { useGetCallById } from '@/hooks/useGetCallById';
 import { Loader2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 
 export default function MeetingPage() {
   const { id } = useParams<{ id: string }>();
   const { data: user, isPending: isSessionLoading } = useSession();
   const [isSetupComplete, setIsSetupComplete] = useState(false);
-  const { call, isCallLoading } = useGetCallById(id);
+  const {call,isCallLoading,fetchCallById} = useGetCallById();
   const [isCallAlreadyEnded, setIsCallAlreadyEnded] = useState(false);
   useEffect(()=>{
+    if(!id){
+      return;
+    }
+    fetchCallById(id); 
+    
+  },[id])
+  useEffect(()=>{
+    if(!call){
+      return;
+    }
     if(call?.state?.endedAt){
       setIsCallAlreadyEnded(true);
+    }
+    if(call?.state?.custom?.description!=='Instant Meeting'){
+      call?.update({
+        starts_at: new Date().toISOString()
+      })
     }
   },[call]) 
   if (isSessionLoading || isCallLoading) {
@@ -30,7 +44,7 @@ export default function MeetingPage() {
     );
   }
 
-  if (!call) {
+  if (isCallAlreadyEnded) {
     return (
       <div className="flex h-screen flex-col items-center justify-center gap-3">
         <h2 className="text-2xl font-bold">Call Not Found</h2>
@@ -49,7 +63,9 @@ export default function MeetingPage() {
   }
 
   return (
-    <main className="h-screen w-full">
+    <>
+    {call && (
+      <main className="h-screen w-full">
       <StreamCall call={call}>
         <StreamTheme>
           {!isSetupComplete ? (
@@ -59,6 +75,8 @@ export default function MeetingPage() {
         </StreamTheme>
       </StreamCall>
     </main>
+    )}
+    </>
   );
 }
 

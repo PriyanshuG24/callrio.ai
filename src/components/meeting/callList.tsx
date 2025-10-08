@@ -1,17 +1,15 @@
 'use client'
 import React from 'react'
-import { useEffect } from 'react'
-import { useGetCalls } from '@/hooks/useGetCalls'
 import { Call, CallRecording } from '@stream-io/video-react-sdk';
 import MeetingCardMain from './meetingCard/meetingCardMain';    
 import Loader from '../ui/loader';
+import { useCallStore } from '@/store/callStore';
 type CallListType = "upcoming" | "ended"| "recordings";
 interface CallListProps {
     type: CallListType;
 }
 const callList = ({type}: CallListProps) => {
-    const {callRecordings,loading,endedCalls,upcomingCalls}=useGetCalls()
-    const [recordings,setRecordings]=React.useState<CallRecording[]>([])
+    const {callRecordings,loading,endedCalls,upcomingCalls}=useCallStore()
     const getCalls=()=>{
         switch(type){
             case "upcoming":
@@ -19,7 +17,7 @@ const callList = ({type}: CallListProps) => {
             case "ended":
                 return endedCalls
             case "recordings":
-                return recordings
+                return callRecordings
             default:
                 return []
         }
@@ -36,20 +34,6 @@ const callList = ({type}: CallListProps) => {
                 return ""
         }
     }
-    useEffect(()=>{
-        const fetchRecordings=async()=>{
-            if(type==='recordings'){
-                const callData=await Promise.all(callRecordings.map((meeting)=>meeting.queryRecordings()))
-                const recordings=callData.
-                filter((call)=> call.recordings.length>0)
-                .flatMap((call)=>call.recordings)
-                setRecordings(recordings)
-            }
-        }
-        if(type==='recordings'){
-            fetchRecordings()
-        }
-    },[type,callRecordings])
     const calls=getCalls()
     const noCallsMessage=getNoCallsMessage()
     if(loading){

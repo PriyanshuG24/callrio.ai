@@ -1,14 +1,12 @@
-import { Calendar, Clock, MessageCircleDashedIcon } from "lucide-react";
+import { Calendar, Clock } from "lucide-react";
 import { Call, CallRecording } from "@stream-io/video-react-sdk";
 import { formatDate, formatTime, getMeetingDuration } from "@/lib/utils";
 
 interface MeetingCardDetailsProps {
   meeting: Call | CallRecording;
-  type: "upcoming" | "ended" | "recordings";
-  chatMessagesCount?: number;
 }
 
-export const MeetingCardDetails = ({ meeting, type, chatMessagesCount }: MeetingCardDetailsProps) => {
+export const MeetingCardDetails = ({ meeting }: MeetingCardDetailsProps) => {
   if ("state" in meeting) {
     return (
       <div className="px-4 pb-4 space-y-2">
@@ -29,12 +27,6 @@ export const MeetingCardDetails = ({ meeting, type, chatMessagesCount }: Meeting
             </>
           )}
         </div>
-        {/* {chatMessagesCount && chatMessagesCount > 0 && type === "ended" && ( */}
-          <div className="flex items-center text-sm text-muted-foreground">
-            <MessageCircleDashedIcon className="h-4 w-4 mr-2" />
-            <span>{chatMessagesCount} messages</span>
-          </div>
-        {/* )} */}
       </div>
     );
   }

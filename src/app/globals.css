@@ -2,7 +2,6 @@
 @import "tw-animate-css";
 
 
-@import '../layout.css';
 
 @custom-variant dark (&:is(.dark *));
 

@@ -4,7 +4,7 @@ import { Inter } from 'next/font/google';
 import { Toaster } from "@/components/ui/sonner";
 import "@stream-io/video-react-sdk/dist/css/styles.css";
 import "react-datepicker/dist/react-datepicker.css";
-// import 'stream-chat-react/dist/css/v2/index.css';
+import 'stream-chat-react/dist/css/v2/index.css';
 import { ThemeProvider } from "@/providers/theme-provider";
 import { AppLayout } from "@/components/layout/app-layout";
 const inter = Inter({ subsets: ['latin'] });

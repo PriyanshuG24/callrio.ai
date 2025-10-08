@@ -10,12 +10,12 @@ import type { Channel as StreamChannel } from 'stream-chat';
 
 export const MeetingChat = ({ channel }: { channel: StreamChannel | null }) => {
   if (!channel) return null;
-
+  
   return (
     <Channel channel={channel}>
       <Window>
         <ChannelHeader />
-        <MessageList />
+        <MessageList  />
         <MessageInput />
       </Window>
     </Channel>

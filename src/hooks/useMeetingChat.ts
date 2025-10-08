@@ -1,4 +1,3 @@
-// src/hooks/useMeetingChat.ts (Alternative version)
 'use client';
 import { useEffect, useState } from 'react';
 import { getChatClient } from '@/lib/chat-client';
@@ -16,13 +15,8 @@ export const useMeetingChat = (callId: string, otherUserIds: string[] = []) => {
     const initChannel = async () => {
       try {
         const { id, name, image } = session.user;
-        
-        // First, ensure the channel exists and user is a member (server-side)
         await createOrUpdateMeetingChannel(callId, otherUserIds, id);
-        
-        // Then get the client and connect to the channel
         const chatClient = await getChatClient({ id, name, image: image || undefined });
-        
         const ch = chatClient.channel('messaging', callId);
         await ch.watch();
         setChannel(ch);

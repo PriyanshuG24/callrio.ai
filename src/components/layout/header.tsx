@@ -8,21 +8,20 @@ import { useState} from 'react';
 import { useSession } from '@/lib/auth-client';
 import { ThemeToggle } from '../theme/theme-toggle';
 import Image from 'next/image';
+import {Skeleton} from '@/components/ui/skeleton';
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
   const { data: session, isPending } = useSession();
-
-  if (isPending) {
-    return null; // Or a loading spinner
-  }
   const navLinks = [
     { name: 'Features', href: '#features' },
     { name: 'Pricing', href: '#pricing' },
     { name: 'About', href: '#about' },
     { name: 'Contact', href: '#contact' },
   ];
-
+  if(session && !isPending){
+    return <Skeleton className="h-screen"/>
+  }
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -59,15 +58,15 @@ export function Header() {
             <ThemeToggle />
 
             {session ? (
-              <Button onClick={() => router.push('/dashboard')}>
+              <Button onClick={() => router.replace('/dashboard')}>
                 Go to Dashboard
               </Button>
             ) : (
               <div className="hidden md:flex space-x-2">
-                <Button variant="outline" onClick={() => router.push('/login')}>
+                <Button variant="outline" onClick={() => router.replace('/login')}>
                   Sign In
                 </Button>
-                <Button onClick={() => router.push('/register')}>
+                <Button onClick={() => router.replace('/register')}>
                   Get Started
                 </Button>
               </div>
@@ -106,7 +105,7 @@ export function Header() {
                     variant="outline" 
                     className="w-full"
                     onClick={() => {
-                      router.push('/login');
+                      router.replace('/login');
                       setMobileMenuOpen(false);
                     }}
                   >
@@ -115,7 +114,7 @@ export function Header() {
                   <Button 
                     className="w-full mt-2"
                     onClick={() => {
-                      router.push('/register');
+                      router.replace('/register');
                       setMobileMenuOpen(false);
                     }}
                   >

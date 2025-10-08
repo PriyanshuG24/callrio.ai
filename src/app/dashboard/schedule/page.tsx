@@ -17,8 +17,7 @@ export default function SchedulePage() {
     values,  
     setValues,
     user, 
-    createMeeting,
-    callDetails
+    createMeeting
     
   } = useMeetingState();
   const [showDialog, setShowDialog] = useState(false);

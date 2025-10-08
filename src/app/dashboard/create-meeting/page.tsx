@@ -10,6 +10,7 @@ export default function CreateMeetingPage() {
     user, 
     createMeeting 
   } = useMeetingState();
+  // console.log(callDetails?.state?.settings?.transcription);
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">Create An Instant Meeting</h1>

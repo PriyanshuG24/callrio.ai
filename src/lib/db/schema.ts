@@ -59,3 +59,53 @@ export const verification = pgTable("verification", {
     .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
 });
+
+export const meeting=pgTable("meeting",{
+  id:text("id").primaryKey(),
+  title:text("title").notNull(),
+  ownerId:text("owner_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+  startAt:timestamp("start_at"),
+  endedAt:timestamp("ended_at"),
+  isStarted:boolean("is_started").default(false).notNull(),
+})
+
+export const meetingParticipant = pgTable("meeting_participant", {
+  id: text("id").primaryKey(),
+  meetingId: text("meeting_id")
+    .notNull()
+    .references(() => meeting.id, { onDelete: "cascade" }),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  participantName:text("participant_name").notNull(),
+  role: text("role").default("guest").notNull(),
+  joinedAt: timestamp("joined_at"),
+  leftAt: timestamp("left_at"),
+});
+
+export const meetingTranscription = pgTable("meeting_transcription", {
+  id: text("id").primaryKey(),
+  meetingId: text("meeting_id")
+    .notNull()
+    .references(() => meeting.id, { onDelete: "cascade" }),
+  participantId: text("participant_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  participantName:text("participant_name").notNull(),
+  text: text("text").notNull(),
+  startSayingAt:timestamp("start_saying_at"),
+  endSayingAt:timestamp("end_saying_at"),
+});
+
+export const meetingChatHistory=pgTable("meeting_chat_history",{
+  id:text("id").primaryKey(),
+  meetingId:text("meeting_id")
+    .notNull()
+    .references(() => meeting.id, { onDelete: "cascade" }),
+  participantId:text("participant_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  participantName:text("participant_name").notNull(),
+  text:text("text").notNull(),
+  createdAt:timestamp("created_at").defaultNow().notNull(),
+})

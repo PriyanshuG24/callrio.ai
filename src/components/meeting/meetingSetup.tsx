@@ -3,6 +3,7 @@ import React from 'react'
 import { DeviceSettings, useCall, VideoPreview } from '@stream-io/video-react-sdk'
 import { useState,useEffect } from 'react'
 import { Button } from '@/components/ui/button'
+import { startMeeting } from '@/actions/dbAction/meeting';
 interface MeetingSetupProps {
     setIsSetupComplete: (value: boolean) => void;
 }
@@ -21,6 +22,11 @@ const MeetingSetup = ({setIsSetupComplete}:MeetingSetupProps) => {
             call?.microphone.enable()
         }
     },[isMicCamtoggledOn,call?.camera,call?.microphone])
+    const onJoinCall=async()=>{
+        call.join();
+        setIsSetupComplete(true);
+        await startMeeting(call?.id);
+    }
   return (
     <div className='flex h-screen w-full flex-col items-center justify-center'>
         <h1 className='text-2xl font-bold'>Meeting Setup</h1>
@@ -32,7 +38,7 @@ const MeetingSetup = ({setIsSetupComplete}:MeetingSetupProps) => {
             </label>
             <DeviceSettings/>
         </div>
-        <Button className='rounded-full bg-green-500' onClick={()=>{call.join();setIsSetupComplete(true)}}>Join Meeting</Button>
+        <Button className='rounded-full bg-green-500' onClick={onJoinCall}>Join Meeting</Button>
     </div>
   )
 }

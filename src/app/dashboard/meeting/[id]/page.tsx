@@ -14,7 +14,7 @@ export default function MeetingPage() {
   const { id } = useParams<{ id: string }>();
   const { data: user, isPending: isSessionLoading } = useSession();
   const [isSetupComplete, setIsSetupComplete] = useState(false);
-  const {call,isCallLoading,fetchCallById} = useGetCallById();
+  const {call,isCallLoading,fetchCallById} = useGetCallById(false);
   const [isCallAlreadyEnded, setIsCallAlreadyEnded] = useState(false);
   useEffect(()=>{
     if(!id){

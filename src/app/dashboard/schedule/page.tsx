@@ -5,14 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useMeetingState } from '@/hooks/useMeetingState';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import { toast } from 'sonner';
 import {MeetingLinkDialog} from '@/components/meeting/meetingLinkDialog';
 
 export default function SchedulePage() {
-  const router = useRouter();
   const { 
     values,  
     setValues,

@@ -1,22 +1,9 @@
 'use client';
 
-import {
-  useCall,
-  CallControls,
-  CallParticipantsList,
-  CallStatsButton,
-  PaginatedGridLayout,
-  SpeakerLayout,
-  useCallStateHooks
-} from '@stream-io/video-react-sdk';
-import { useState, useCallback, useEffect } from 'react';
+import {useCall,CallControls,CallParticipantsList,CallStatsButton,PaginatedGridLayout,SpeakerLayout,useCallStateHooks} from '@stream-io/video-react-sdk';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from '../ui/dropdown-menu';
+import {DropdownMenu,DropdownMenuTrigger,DropdownMenuContent,DropdownMenuItem} from '../ui/dropdown-menu';
 import { LayoutList, Users, Loader2, ChartBarIcon } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useRouter } from 'next/navigation';
@@ -24,9 +11,12 @@ import { EndCallButton } from './endCallButton';
 import { toast } from 'sonner';
 import { useSession } from '@/lib/auth-client';
 import { useMeetingChat } from '@/hooks/useMeetingChat'; 
-import {MeetingChat} from '@/components/meeting/meetingChat';
-
-
+import {MeetingChat} from '@/components/meeting/meetingChat'
+import {formatDate} from '@/lib/utils'
+import {endMeeting } from '@/actions/dbAction/meeting';
+import {createMeetingParticipant,createMeetingParticipantSessionHistory,updateMeetingParticipantSessionHistory} from '@/actions/dbAction/participant';
+import {createMeetingRecording} from '@/actions/dbAction/recording';
+import {createMeetingTranscription} from '@/actions/dbAction/transcription';
 type CallLayoutType = 'grid' | 'speaker-left' | 'speaker-right';
 
 const MeetingRoom = () => {
@@ -41,15 +31,15 @@ const MeetingRoom = () => {
   const router = useRouter();
   const call = useCall();
   const { data: user } = useSession();
-  const isMeetingOwner =
-    localParticipant &&
-    call?.state?.createdBy &&
-    localParticipant.userId === call.state.createdBy.id;
-  const otherUserIds = participants
-    .filter((p) => p.userId !== user?.user.id)
-    .map((p) => p.userId || '');
+  const isMeetingOwner =localParticipant && call?.state?.createdBy && localParticipant.userId === call.state.createdBy.id;
+  const otherUserIds = participants.filter((p) => p.userId !== user?.user.id).map((p) => p.userId || '');
   const channel = useMeetingChat(call?.id || '', otherUserIds);
+  const [recordingReady, setRecordingReady] = useState(false);
+  const [isRecordingAvailable, setIsRecordingAvailable] = useState(false);
+  const [transcriptionReady, setTranscriptionReady] = useState(false);
+  const [message,setMessage] = useState('');
 
+  const activeParticipantMap=useRef(new Map<string,string>());
   const CallLayout = useCallback(() => {
     switch (layout) {
       case 'grid':
@@ -64,9 +54,13 @@ const MeetingRoom = () => {
   }, [layout]);
   useEffect(() => {
     if (!call) return;
-  
     const cleanupMedia = async () => {
       try {
+        for(const [key,value] of activeParticipantMap.current){
+          console.log("key",key,"value",value)
+          await updateMeetingParticipantSessionHistory(call?.id, key,value);
+        }
+        activeParticipantMap.current.clear();
         await Promise.allSettled([call.camera?.disable(), call.microphone?.disable()]);
         localParticipant?.videoStream?.getTracks?.().forEach((t: MediaStreamTrack) => t.stop());
         localParticipant?.audioStream?.getTracks?.().forEach((t: MediaStreamTrack) => t.stop());
@@ -76,28 +70,81 @@ const MeetingRoom = () => {
     };
     const onEnded = async () => {
       await cleanupMedia();
+      await endMeeting(call?.id);
       setIsRedirecting(true);
-      setTimeout(() => {
-        router.replace("/dashboard");
-      }, 3000);
-    
+      setMessage("Meeting ended, redirecting..");    
     };
-    const onJoined = (event: any) => {
+    const onJoined = async (event: any) => {
       if (event.participant.userId !== localParticipant?.userId) {
+        if (activeParticipantMap.current.has(event.participant.user?.id)) {
+          console.log("Participant already tracked, skipping duplicate insert");
+          return;
+        }
+        const participanttt=await event.participant
+        console.log("joined",participanttt)
         toast.success(`${event.participant.user?.name || "Someone"} joined the meeting`);
+        console.log(`Participant ${event.participant.user?.name || "Someone"} joined at:`,formatDate(Date.now()))
+        await createMeetingParticipant(call?.id, event.participant.user?.id,event.participant.user?.name || "Unknown",event.participant.user?.role );
+        await createMeetingParticipantSessionHistory(call?.id, event.participant.user?.id,event.participant.user_session_id );
+        activeParticipantMap.current.set(event.participant.user?.id,event.participant.user_session_id);
       }
     };
-    const onLeft = (event: any) => {
+    const onLeft = async (event: any) => {
       if (event.participant.userId !== localParticipant?.userId) {
+        if (!activeParticipantMap.current.has(event.participant.user?.id)) {
+          console.log("Participant already tracked, skipping duplicate insert");
+          return;
+        }
+        const participanttt=await event.participant
+        console.log("left",participanttt)
         toast.warning(`${event.participant.user?.name || "Someone"} left the meeting`);
+        console.log(`Participant ${event.participant.user?.name || "Someone"} left at:`,formatDate(Date.now()))    
+        await updateMeetingParticipantSessionHistory(call?.id, event.participant.user?.id,event.participant.user_session_id);    
+        activeParticipantMap.current.delete(event.participant.user?.id);
       }
     };
-  
+    const onStarted = () => setIsSessionStarted(true);
+    const onRecordingReady = async (event: any) => {
+      setMessage("Recording Uploading...");
+      console.log("Recording ready", event);
+      const { call_recording } = event;
+      if (call_recording) {
+        await createMeetingRecording(
+          call?.id,
+          call_recording.url,
+          call_recording.session_id,
+          new Date(call_recording.start_time),
+          new Date(call_recording.end_time)
+        );
+      }
+      setRecordingReady(true);
+    };
+    const onTranscriptionReady = async (event: any) => {
+      setMessage("Transcription Uploading...");
+      console.log("Transcription ready", event);
+      const { call_transcription } = event;
+      if (call_transcription) {
+        await createMeetingTranscription(
+          call?.id,
+          call_transcription.url,
+          call_transcription.session_id,
+          new Date(call_transcription.start_time),
+          new Date(call_transcription.end_time)
+        );
+      }
+      setTranscriptionReady(true);
+    };
+    const onRecordingEnded = async (event: any) => {
+      setIsRecordingAvailable(true);
+      console.log("Recording ended", event);
+    };
     call.on?.("call.ended" as any, onEnded);
     call.on?.("call.session_participant_joined" as any, onJoined);
     call.on?.("call.session_participant_left" as any, onLeft);
-    call.on?.("call.session_started" as any, () => setIsSessionStarted(true));
-
+    call.on?.("call.session_started" as any, onStarted);
+    call.on?.("call.recording_ready" as any, onRecordingReady);
+    call.on?.("call.transcription_ready" as any, onTranscriptionReady);
+    call.on?.("call.recording_stopped" as any, onRecordingEnded);
     if (call.state?.endedAt) {
       onEnded();
     }
@@ -106,16 +153,36 @@ const MeetingRoom = () => {
       call.off?.("call.ended" as any, onEnded);
       call.off?.("call.session_participant_joined" as any, onJoined);
       call.off?.("call.session_participant_left" as any, onLeft);
-      call.off?.("call.session_started" as any, () => setIsSessionStarted(false));
+      call.off?.("call.session_started" as any, onStarted);
+      call.off?.("call.recording_ready" as any, onRecordingReady);
+      call.off?.("call.transcription_ready" as any, onTranscriptionReady);
+      call.off?.("call.recording_stopped" as any, onRecordingEnded);
     };
   }, [call, localParticipant, isRedirecting, router]);
+  useEffect(() => {
+    if (isRecordingAvailable && call?.state?.endedAt) {
+      if (recordingReady && transcriptionReady) {
+        setIsRedirecting(true); 
+        const timer = setTimeout(() => {
+          router.replace("/dashboard");
+        }, 1000); 
+        return () => clearTimeout(timer);
+      }
+    }
+    else if (!isRecordingAvailable && call?.state?.endedAt){
+      setIsRedirecting(true); 
+      const timer = setTimeout(() => {
+        router.replace("/dashboard");
+      }, 1000); 
+      return () => clearTimeout(timer);
+    }
+}, [recordingReady, transcriptionReady, router, isRecordingAvailable, call?.state?.endedAt]);
   
-
   if (isRedirecting) {
     return (
       <div className="flex flex-col items-center justify-center h-screen">
         <Loader2 className="h-8 w-8 animate-spin" />
-        <p className="mt-4">Meeting ended, redirecting...</p>
+        <p className="mt-4">{message}</p>
       </div>
     );
   }
@@ -172,7 +239,10 @@ const MeetingRoom = () => {
       )}
     >
       <div className="flex-shrink-0">
-        <CallControls/>
+        <CallControls 
+        onLeave={() => {
+          router.replace("/dashboard");
+        }}/>
       </div>
       <div className="flex-shrink-0">
         <DropdownMenu>

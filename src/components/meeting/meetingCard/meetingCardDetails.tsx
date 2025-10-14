@@ -40,6 +40,7 @@ export const MeetingCardDetails = ({ meeting }: MeetingCardDetailsProps) => {
         </div>
         <div className="flex items-center text-sm text-muted-foreground">
           <Clock className="h-4 w-4 mr-2" />
+          
           <span>Duration: {getMeetingDuration(meeting.start_time, meeting.end_time)}</span>
         </div>
       </div>

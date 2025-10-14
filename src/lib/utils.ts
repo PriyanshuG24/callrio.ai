@@ -9,7 +9,7 @@ export function cn(...inputs: ClassValue[]) {
 export const formatDate = (dateString?: string | Date | number) => {
   if (!dateString) return "No date";
   try {
-    return format(new Date(dateString), "MMM d, yyyy");
+    return format(new Date(dateString), "MMM d, yyyy HH:mm:ss");
   } catch {
     return "Invalid date";
   }
@@ -18,7 +18,7 @@ export const formatDate = (dateString?: string | Date | number) => {
 export const formatTime = (dateString?: string | Date | number) => {
   if (!dateString) return "No time";
   try {
-    return format(new Date(dateString), "h:mm a");
+    return format(new Date(dateString), "h:mm:ss");
   } catch {
     return "Invalid time";
   }
@@ -27,9 +27,12 @@ export const formatTime = (dateString?: string | Date | number) => {
 export const getMeetingDuration = (start?: string | Date, end?: string | Date) => {
   if (!start || !end) return "N/A";
   try {
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    return `${differenceInMinutes(endDate, startDate)} min`;
+    const startDate =formatTime(start)
+    const endDate =formatTime(end)
+    const [startHours, startMinutes, startSeconds] = startDate.split(":").map(Number);
+    const [endHours, endMinutes, endSeconds] = endDate.split(":").map(Number);
+    const duration = (endHours - startHours) * 60 + (endMinutes - startMinutes) + (endSeconds - startSeconds);
+    return `${duration} min`;
   } catch {
     return "N/A";
   }

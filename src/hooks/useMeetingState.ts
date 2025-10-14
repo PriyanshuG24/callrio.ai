@@ -5,6 +5,7 @@ import { useSession } from '@/lib/auth-client';
 import { useStreamVideoClient } from '@stream-io/video-react-sdk';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import {createMeetingCall} from '@/actions/dbAction/meeting';
 
 interface MeetingState {
   dateTime: Date | null;
@@ -52,11 +53,14 @@ export const useMeetingState = () => {
           },
         },
       });
-      
-
       setCallDetails(call);
+      const {success, message} = await createMeetingCall({
+        meetingId: id,
+        title: call.state.custom?.description,
+        ownerId: user.user.id,
+      })
+      console.log(success, message,id)
       toast.success(`Meeting ${isInstant ? 'created' : 'scheduled'} successfully!`);
-
       if (isInstant && !values.description) {
         router.replace(`/dashboard/meeting/${id}`);
       } else if (!isInstant) {

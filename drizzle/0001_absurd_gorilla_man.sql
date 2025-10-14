@@ -1,0 +1,1 @@
+ALTER TABLE "meeting" DROP COLUMN "is_recording_available";

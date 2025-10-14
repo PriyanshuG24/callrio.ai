@@ -1,6 +1,6 @@
 {
-  "id": "16a2d708-bd6d-4bfb-a822-a172a83bc2ef",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "8fae8a60-0c38-48fd-b69d-319d7501eca3",
+  "prevId": "16a2d708-bd6d-4bfb-a822-a172a83bc2ef",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -160,13 +160,6 @@
         },
         "is_ended": {
           "name": "is_ended",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
-        },
-        "is_recording_available": {
-          "name": "is_recording_available",
           "type": "boolean",
           "primaryKey": false,
           "notNull": false,

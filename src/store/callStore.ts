@@ -28,7 +28,7 @@ export const useCallStore = create<CallStore>((set,get) => ({
         )
         set({endedCalls, upcomingCalls })
     },
-
+    
     setLoading: (loading) => set({ loading }),
 
     refreshCalls: (calls) => {

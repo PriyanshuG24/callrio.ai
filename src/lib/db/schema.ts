@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean,uuid } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -61,51 +61,65 @@ export const verification = pgTable("verification", {
 });
 
 export const meeting=pgTable("meeting",{
-  id:text("id").primaryKey(),
-  title:text("title").notNull(),
+  id: uuid("id").defaultRandom().primaryKey(),
+  meetingId:text("meeting_id").notNull().unique(),
+  title:text("title"),
   ownerId:text("owner_id").notNull().references(() => user.id, { onDelete: "cascade" }),
   startAt:timestamp("start_at"),
   endedAt:timestamp("ended_at"),
-  isStarted:boolean("is_started").default(false).notNull(),
+  isStarted:boolean("is_started").default(false),
+  isEnded:boolean("is_ended").default(false),
+  createdAt:timestamp("created_at").defaultNow()
 })
 
 export const meetingParticipant = pgTable("meeting_participant", {
-  id: text("id").primaryKey(),
+  id: uuid("id").defaultRandom().primaryKey(),
   meetingId: text("meeting_id")
     .notNull()
-    .references(() => meeting.id, { onDelete: "cascade" }),
-  userId: text("user_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  participantName:text("participant_name").notNull(),
-  role: text("role").default("guest").notNull(),
-  joinedAt: timestamp("joined_at"),
-  leftAt: timestamp("left_at"),
-});
-
-export const meetingTranscription = pgTable("meeting_transcription", {
-  id: text("id").primaryKey(),
-  meetingId: text("meeting_id")
-    .notNull()
-    .references(() => meeting.id, { onDelete: "cascade" }),
+    .references(() => meeting.meetingId, { onDelete: "cascade" }),
   participantId: text("participant_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
   participantName:text("participant_name").notNull(),
-  text: text("text").notNull(),
-  startSayingAt:timestamp("start_saying_at"),
-  endSayingAt:timestamp("end_saying_at"),
+  role: text("role").default("guest").notNull(),
+  createdAt:timestamp("created_at").defaultNow()
 });
 
-export const meetingChatHistory=pgTable("meeting_chat_history",{
-  id:text("id").primaryKey(),
-  meetingId:text("meeting_id")
+export const meetingParticipantSessionHistory = pgTable("meeting_participant_session_history", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  meetingId: text("meeting_id")
     .notNull()
-    .references(() => meeting.id, { onDelete: "cascade" }),
-  participantId:text("participant_id")
+    .references(() => meeting.meetingId, { onDelete: "cascade" }),
+  participantId: text("participant_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  participantName:text("participant_name").notNull(),
-  text:text("text").notNull(),
-  createdAt:timestamp("created_at").defaultNow().notNull(),
-})
+  sessionId:text("session_id").notNull(),
+  joinedAt:timestamp("joined_at"),
+  leftAt:timestamp("left_at"),
+  createdAt:timestamp("created_at").defaultNow()
+});
+
+export const meetingTranscription = pgTable("meeting_transcription", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  meetingId: text("meeting_id")
+    .notNull()
+    .references(() => meeting.meetingId, { onDelete: "cascade" }),
+  url:text("url").notNull().unique(),
+  sessionId:text("session_id").notNull(),
+  start_time:timestamp("start_time").notNull(),
+  end_time:timestamp("end_time").notNull(),
+  createdAt:timestamp("created_at").defaultNow()
+});
+
+export const meetingRecording = pgTable("meeting_recording", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  meetingId: text("meeting_id")
+    .notNull()
+    .references(() => meeting.meetingId, { onDelete: "cascade" }),
+  url:text("url").notNull().unique(),
+  sessionId:text("session_id").notNull(),
+  start_time:timestamp("start_time").notNull(),
+  end_time:timestamp("end_time").notNull(),
+  createdAt:timestamp("created_at").defaultNow()
+});
+

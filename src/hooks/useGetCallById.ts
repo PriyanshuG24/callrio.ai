@@ -1,22 +1,19 @@
 import { Call, useStreamVideoClient } from "@stream-io/video-react-sdk";
-import { useState } from "react";
+import { useState,useRef } from "react";
+import { getMeetingParticipants } from "../actions/dbAction/participant";
+import { getTranscriptions } from "../actions/dbAction/transcription";
 
-export const useGetCallById = () => {
+export const useGetCallById = (isTranscriptionRequired:boolean) => {
   const [call, setCall] = useState<Call>();
   const [transcriptions, setTranscriptions] = useState<Object[]>([]);
   const [isCallLoading, setIsCallLoading] = useState(false);
-  const [isTranscriptionRequired, setIsTranscriptionRequired] = useState(false);
-  const [partcipants,setPartcipants] = useState<Object[]>([]);
+  const participantMap = useRef(new Map<string,string>());
   const client = useStreamVideoClient();
     const fetchTranscriptionFile = async (url: string) => {
       const response = await fetch(url);
-      
       const text = await response.text(); 
-     
       const lines = text.split("\n").filter(Boolean);
-      
       const transcriptionData = lines.map((line) => JSON.parse(line));
-      
       return transcriptionData;
     };
   
@@ -32,22 +29,24 @@ export const useGetCallById = () => {
       if (calls.length > 0) {
         const fetchedCall = calls[0];
         setCall(fetchedCall);
-        if(fetchedCall?.state?.members){
-          const { members } = await fetchedCall.queryMembers();
-          setPartcipants(members);
-          
-        }
         if(isTranscriptionRequired){
-          const data = await fetchedCall.queryTranscriptions();
-        
-          if (data?.transcriptions?.length) {
+          const data = await getTranscriptions(id);
+          console.log("Transcriptions",data);
+          if (data?.length) {
             const allLines = await Promise.all(
-              data.transcriptions.map(async (t) => fetchTranscriptionFile(t.url))
+              data.map(async (t) => fetchTranscriptionFile(t.url))
             );
             const flatTranscriptions = allLines.flat();
-            setTranscriptions(flatTranscriptions);
+            const participants=await getMeetingParticipants(id);
+            participants.forEach((p) => {
+              participantMap.current.set(p.participantId, p.participantName);
+            });
+            const enrichedTranscriptions = flatTranscriptions.map((t) => ({
+              ...t,
+              name: participantMap.current.get(t.speaker_id) || "Unknown",
+            }));
+            setTranscriptions(enrichedTranscriptions);
           }
-          setIsTranscriptionRequired(false);
         }
       }
     } catch (err) {
@@ -57,5 +56,5 @@ export const useGetCallById = () => {
     }
   };
 
-  return { call, isCallLoading, fetchCallById, transcriptions, setIsTranscriptionRequired };
+  return { call, isCallLoading, fetchCallById, transcriptions };
 };

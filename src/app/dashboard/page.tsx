@@ -33,6 +33,7 @@ export default function DashboardPage() {
   ];
 
   return (
+
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
@@ -141,7 +142,7 @@ export default function DashboardPage() {
                   </Button>
                   <Button 
                     variant="ghost" 
-                    className="w-full mt-2 text-sm bg-gray-800"
+                    className="w-full mt-2 text-sm "
                     onClick={() => router.replace('/dashboard/schedule')}
                     >
                     View More

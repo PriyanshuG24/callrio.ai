@@ -17,7 +17,7 @@ const MeetingCardMain = ({ meeting, type }: MeetingCardProps) => {
   const router = useRouter();
 
   const meetingId = "id" in meeting ? meeting.id : null;
-  const { call, isCallLoading, fetchCallById } = useGetCallById()
+  const { call, isCallLoading, fetchCallById } = useGetCallById(false)
   const handleCopyLink = () => {
     if (meetingId) {
       const meetingLink = `${window.location.origin}/dashboard/meeting/${meetingId}`;

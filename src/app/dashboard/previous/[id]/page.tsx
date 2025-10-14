@@ -6,15 +6,14 @@ import { getMeetingChat } from "@/actions/streamAction/chat";
 import { Avatar } from "stream-chat-react";
 
 export default function PreviousMeetingPageDetails() {
-  const { call, isCallLoading, fetchCallById, transcriptions ,setIsTranscriptionRequired} = useGetCallById();
+  const { call, isCallLoading, fetchCallById, transcriptions} = useGetCallById(true);
   const [messages, setMessages] = useState<Object[]>([]);
   const params = useParams();
   const id = params.id as string;
   useEffect(() => {
     if (!id || call) return;
-    setIsTranscriptionRequired(true);
     fetchCallById(id);
-  }, [id, fetchCallById]);
+  }, [id]);
 
   useEffect(() => {
     if (!id || !call) return;
@@ -23,7 +22,7 @@ export default function PreviousMeetingPageDetails() {
       setMessages(chat);
     };
     loadData();
-  }, [id, call]);
+  }, [id]);
   if (isCallLoading || !call ) {
     return (
       <div className="flex h-screen items-center justify-center text-white">
@@ -32,7 +31,7 @@ export default function PreviousMeetingPageDetails() {
     );
   }
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black p-6 flex flex-col gap-6">
+    <div className="w-full h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black rounded-xl p-2 flex flex-col gap-6">
       <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl shadow-lg p-6 text-white">
         <h1 className="text-2xl font-bold mb-2">
           {call.state?.custom?.title ?? "Meeting Details"}
@@ -51,7 +50,7 @@ export default function PreviousMeetingPageDetails() {
           </p>
         </div>
       </div>
-
+{/* 
       <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl shadow-lg p-6 flex-1 overflow-y-auto">
         <h2 className="text-xl font-semibold text-white mb-4">Chat History</h2>
         {messages.length > 0 ? (
@@ -61,11 +60,6 @@ export default function PreviousMeetingPageDetails() {
                 key={i}
                 className="flex items-start gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition"
               >
-                {/* <img
-                  src={msg.user?.image}
-                  alt={msg.user?.name}
-                  className="w-10 h-10 rounded-full border border-white/20"
-                /> */}
                 <Avatar className="font-medium text-white rounded-full bg-white/10 px-2 py-1" name={msg.user?.name[0].toUpperCase()} />
                 <div>
                   <div className="flex items-center gap-2">
@@ -100,7 +94,7 @@ export default function PreviousMeetingPageDetails() {
         ) : (
           <p className="text-gray-400">No messages found.</p>
         )}
-      </div>
+      </div> */}
       <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl shadow-lg p-6 flex-1 overflow-y-auto">
         <h2 className="text-xl font-semibold text-white mb-4">Transcription</h2>
         {transcriptions.length > 0 ? (
@@ -112,14 +106,11 @@ export default function PreviousMeetingPageDetails() {
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-white">
-                      {transcription.speaker_id}
-                    </span>
-                    <span className="text-xs text-gray-400">
-                      {new Date(transcription.start_ts).toLocaleString()}
+                    <span className="font-medium text-gray-200 ">
+                      {transcription.name} :
                     </span>
                   </div>
-                  <p className="text-gray-200">{transcription.text}</p>
+                  <p className="text-white">{transcription.text}</p>
                 </div>
               </li>
             ))}

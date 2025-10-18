@@ -28,6 +28,32 @@ export const createMeetingCall = async ({meetingId,title, ownerId}: {meetingId: 
     }
   }
 }
+export const createScheduleMeetingCall = async ({meetingId,title, ownerId,setDate}: {meetingId: string;title: string; ownerId: string; setDate: Date}) => {
+  try {
+    console.log("Meeting Id",meetingId);
+    console.log("Meeting title",title);
+    console.log("Meeting owner Id",ownerId);
+    await db.insert(meeting).values({
+      meetingId: meetingId,
+      title: title || "Meeting",
+      ownerId: ownerId,
+      isStarted: false,
+      isEnded: false,
+      startAt: setDate,
+      createdAt: new Date(),
+    })
+    return {
+      success: true,
+      message: "Meeting created successfully",
+    }
+  } catch (error) {
+    console.error(error);
+    return {
+      success: false,
+      message: "Failed to create meeting",
+    }
+  }
+}
 
 export const startMeeting = async (meetingId: string) => {
     try {
@@ -64,13 +90,24 @@ export const endMeeting = async (meetingId: string) => {
 };
 
 
-export const getAllMeeting=async()=>{
+export const getAllMeeting=async(ownerId:string)=>{
   try {
-    const data=db.select().from(meeting).where(eq(meeting.isEnded, true))
+    const data=db.select().from(meeting).where(eq(meeting.ownerId, ownerId))
     return data
   } catch (error) {
     console.error("Error getting all meetings:", error);
     return []
+  }
+}
+
+
+export const getMeetingById=async(meetingId:string)=>{
+  try {
+    const data=db.select().from(meeting).where(eq(meeting.meetingId, meetingId))
+    return data
+  } catch (error) {
+    console.error("Error getting meeting by id:", error);
+    return null
   }
 }
 

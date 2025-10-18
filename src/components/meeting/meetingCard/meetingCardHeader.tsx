@@ -1,17 +1,12 @@
 import { Clock, CheckCircle } from "lucide-react";
-import { Call, CallRecording } from "@stream-io/video-react-sdk";
 
 interface MeetingCardHeaderProps {
-  meeting: Call | CallRecording;
+  meeting: any;
   type: "upcoming" | "ended" | "recordings";
 }
 
 export const MeetingCardHeader = ({ meeting, type }: MeetingCardHeaderProps) => {
-  const isCall = "state" in meeting;
-  const title = isCall
-    ? meeting.state?.custom?.description || "No Title"
-    : meeting.filename || "Recording";
-
+  const title = meeting.title || "Recording";
   return (
     <div className="p-4">
       <div className="flex items-start justify-between">

@@ -1,7 +1,7 @@
 // src/app/dashboard/page.tsx
 'use client';
 import { useRouter } from 'next/navigation';
-import { Calendar, Video, Users, Clock, FileText, Plus, Combine} from 'lucide-react';
+import { Calendar, Video, Users, Clock, FileText, Plus, Combine,FileVideoCameraIcon} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -16,12 +16,12 @@ export default function DashboardPage() {
   const {upcomingCalls,callRecordings} = useCallStore()
   const upcomingMeetings = upcomingCalls.slice(0, 2).map((call) => ({
     id: call.id,
-    title: call.state.custom?.description || 'Unknown Meeting',
-    time: call.state.startsAt?.toLocaleTimeString() || 'Unknown Time',
-    date: call.state.startsAt?.toLocaleDateString() || 'Unknown Date',
+    title: call.title,
+    time: call.startAt?.toLocaleTimeString() || 'Unknown Time',
+    date: call.startAt?.toLocaleDateString() || 'Unknown Date',
   }));
   const recentRecordings = callRecordings.slice(0, 4).map((recording) => ({
-    title: recording.filename || 'Unknown Recording',
+    title: 'Recording',
     date: formatTime(recording.start_time) || 'Unknown Date',
     duration: getMeetingDuration(recording.start_time, recording.end_time) || 'Unknown Duration',
   }));
@@ -200,6 +200,7 @@ export default function DashboardPage() {
                     className="w-full mt-2 text-sm"
                     onClick={() => router.replace('/dashboard/recordings')}
                     >
+                      <FileVideoCameraIcon className="h-4 w-4 mr-2" />
                     View All Recordings
                     </Button>
                 </div>
@@ -259,9 +260,55 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
              
-              <div className="text-center py-8 text-muted-foreground">
-                <Video className="h-12 w-12 mx-auto mb-2" />
-                <p>No recordings available</p>
+              <div className="text-center py-8 ">
+               
+                 {recentRecordings.length<=0?
+                 <p className="text-sm">Recordings Available</p>
+                 :
+                 <>
+                 {recentRecordings.map((recording) => (
+                    <div 
+                        key={recording.title} 
+                        className="flex items-center p-4 border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer"
+                    >
+                        <div className="flex-shrink-0 h-10 w-10 bg-primary/10 rounded flex items-center justify-center mr-3">
+                        <Video className="h-5 w-5 text-primary" />
+                        </div>
+                        <div className="flex-1 min-w-0 overflow-hidden flex items-center justify-between">
+                          <div className="flex items-center text-xs text-muted-foreground">
+                            <span>{recording.date}</span>
+                            <span className="mx-2">•</span>
+                            <span>{recording.duration}</span>
+                        </div>
+                        <p className="text-sm font-medium truncate">{recording.title}</p>
+                        </div>
+                        <Button variant="ghost" size="icon" className="flex-shrink-0">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        >
+                            <polygon points="5 3 19 12 5 21 5 3" />
+                        </svg>
+                        </Button>
+                    </div>
+                    ))}
+                  <Button 
+                    variant="ghost" 
+                    className="w-full mt-2 text-sm"
+                    onClick={() => router.replace('/dashboard/recordings')}
+                    >
+                    <FileVideoCameraIcon className="h-4 w-4 mr-2" />
+                    View All Recordings
+                    </Button>
+                 </>
+                 }
               </div>
             </CardContent>
           </Card>

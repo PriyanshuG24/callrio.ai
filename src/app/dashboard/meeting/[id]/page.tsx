@@ -14,26 +14,24 @@ export default function MeetingPage() {
   const { id } = useParams<{ id: string }>();
   const { data: user, isPending: isSessionLoading } = useSession();
   const [isSetupComplete, setIsSetupComplete] = useState(false);
-  const {call,isCallLoading,fetchCallById} = useGetCallById(false);
+  const {call,isCallLoading,fetchCallById} = useGetCallById();
   const [isCallAlreadyEnded, setIsCallAlreadyEnded] = useState(false);
+  console.log("id",id)
   useEffect(()=>{
     if(!id){
+      console.log("id not found")
       return;
     }
-    fetchCallById(id); 
-    
+    fetchCallById(id);
   },[id])
   useEffect(()=>{
     if(!call){
+      console.log("call not found")
       return;
     }
     if(call?.state?.endedAt){
       setIsCallAlreadyEnded(true);
-    }
-    if(call?.state?.custom?.description!=='Instant Meeting'){
-      call?.update({
-        starts_at: new Date().toISOString()
-      })
+      return;
     }
   },[call]) 
   if (isSessionLoading || isCallLoading) {
@@ -61,7 +59,7 @@ export default function MeetingPage() {
       </div>
     );
   }
-
+  console.log("call",call)
   return (
     <>
     {call && (

@@ -1,6 +1,5 @@
 'use client'
 import React from 'react'
-import { Call, CallRecording } from '@stream-io/video-react-sdk';
 import MeetingCardMain from './meetingCard/meetingCardMain';    
 import Loader from '../ui/loader';
 import { useCallStore } from '@/store/callStore';
@@ -50,10 +49,10 @@ const callList = ({type}: CallListProps) => {
       
   return (
     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5'>
-        {calls && calls.length > 0 ? calls.map((meeting:Call|CallRecording)=>(
+        {calls && calls.length > 0 ? calls.map((meeting)=>(
             <MeetingCardMain 
-            key={(meeting as Call).id || (meeting as CallRecording).filename}
-            meeting={(meeting as Call)}
+            key={(meeting as any).id  || (meeting as any).url}
+            meeting={(meeting as any)}
             type={type}
              />
         )) : <h1>{noCallsMessage}</h1>}

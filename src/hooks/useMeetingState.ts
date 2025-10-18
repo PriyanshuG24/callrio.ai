@@ -5,7 +5,7 @@ import { useSession } from '@/lib/auth-client';
 import { useStreamVideoClient } from '@stream-io/video-react-sdk';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import {createMeetingCall} from '@/actions/dbAction/meeting';
+import {createMeetingCall, createScheduleMeetingCall} from '@/actions/dbAction/meeting';
 
 interface MeetingState {
   dateTime: Date | null;
@@ -26,7 +26,7 @@ export const useMeetingState = () => {
   const client = useStreamVideoClient();
   const [isLoading, setIsLoading] = useState(false);
 
-  const createMeeting = async (isInstant = true) => {
+  const createMeeting = async (isInstant = true,setDate: Date) => {
     if (!user || !client) {
       toast.error('Please sign in to create a meeting');
       return;
@@ -46,7 +46,7 @@ export const useMeetingState = () => {
               language: 'en',
             },
           },
-          starts_at: values.dateTime?.toISOString() || new Date().toISOString(),
+          starts_at: setDate.toISOString(),
           custom: {
             description:
               values.description || (isInstant ? 'Instant Meeting' : 'Scheduled Meeting'),
@@ -54,16 +54,24 @@ export const useMeetingState = () => {
         },
       });
       setCallDetails(call);
-      const {success, message} = await createMeetingCall({
-        meetingId: id,
-        title: call.state.custom?.description,
-        ownerId: user.user.id,
-      })
-      console.log(success, message,id)
-      toast.success(`Meeting ${isInstant ? 'created' : 'scheduled'} successfully!`);
       if (isInstant && !values.description) {
+        const {success, message} = await createMeetingCall({
+          meetingId: id,
+          title: call.state.custom?.description,
+          ownerId: user.user.id,
+        })
+        console.log(success, message,id)
+        toast.success(`Meeting ${isInstant ? 'created' : 'scheduled'} successfully!`);
         router.replace(`/dashboard/meeting/${id}`);
       } else if (!isInstant) {
+        const {success, message} = await createScheduleMeetingCall({
+          meetingId: id,
+          title: call.state.custom?.description,
+          ownerId: user.user.id,
+          setDate: setDate,
+        })
+        console.log(success, message,id)
+        toast.success(`Meeting ${isInstant ? 'created' : 'scheduled'} successfully!`);
         router.replace('/dashboard/schedule');
       }
 

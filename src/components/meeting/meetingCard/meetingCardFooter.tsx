@@ -1,10 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Copy, Play, Video, LucideArrowDownLeftFromSquare } from "lucide-react";
 import { toast } from "sonner";
-import { Call, CallRecording } from "@stream-io/video-react-sdk";
 import { useRouter } from "next/navigation";
 interface MeetingCardFooterProps {
-  meeting: Call | CallRecording;
+  meeting: any;
   type: "upcoming" | "ended" | "recordings";
   onStartMeeting: () => void;
   onCopyLink: () => void;
@@ -12,7 +11,7 @@ interface MeetingCardFooterProps {
 
 export const MeetingCardFooter = ({ meeting, type, onStartMeeting, onCopyLink }: MeetingCardFooterProps) => {
   const router = useRouter();
-  if ("filename" in meeting) {
+  if ("url" in meeting) {
     return (
       <div className="flex items-center justify-center border-t py-2 px-4">
         <div className="flex gap-4">
@@ -40,7 +39,7 @@ export const MeetingCardFooter = ({ meeting, type, onStartMeeting, onCopyLink }:
   if (type === "ended") {
     return (
       <div className="mt-auto p-4 border-t">
-        <div className="flex items-center justify-center text-sm text-muted-foreground py-2 cursor-pointer" onClick={() => router.replace(`/dashboard/previous/${meeting.id}`)}>
+        <div className="flex items-center justify-center text-sm text-muted-foreground py-2 cursor-pointer" onClick={() => router.replace(`/dashboard/previous/${meeting.meetingId}`)}>
           <LucideArrowDownLeftFromSquare className="h-4 w-4 mr-2 text-red-500" />
           <span><b className="text-primary">More Details : Click to view</b></span>
         </div>

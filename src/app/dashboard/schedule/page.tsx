@@ -24,7 +24,7 @@ export default function SchedulePage() {
   const handleCreateMeeting = async() => {
     try {
       setIsLoading(true);
-      const newMeeting = await createMeeting(false);
+      const newMeeting = await createMeeting(false,values.dateTime as Date);
       if (!newMeeting?.id) {
         throw new Error("Meeting ID not returned");
       }

@@ -13,7 +13,7 @@ export default function CreateMeetingPage() {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">Create An Instant Meeting</h1>
-      <Button onClick={() => createMeeting(true)} disabled={!user}>
+      <Button onClick={() => createMeeting(true,new Date())} disabled={!user}>
         {callDetails ? 'Meeting Created' : 'Create Meeting'}
       </Button>
     </div>

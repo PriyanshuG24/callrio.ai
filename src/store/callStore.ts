@@ -1,15 +1,14 @@
 import { create } from "zustand";
-import { Call,CallRecording } from "@stream-io/video-react-sdk";
 interface CallStore {
-    callRecordings: CallRecording[]
-    endedCalls: Call[]
-    upcomingCalls: Call[]
+    callRecordings:any[]
+    endedCalls: any[]
+    upcomingCalls: any[]
     loading: boolean
-    setCalls: (calls: Call[]) => void
+    setCalls: (calls: any[]) => void
     setLoading: (loading: boolean) => void
-    refreshCalls: (calls: Call[]) => void
-    setCallRecordings: (recordings: CallRecording[]) => void
-    refreshCallRecordings: (recordings: CallRecording[]) => void
+    refreshCalls: (calls: any[]) => void
+    setCallRecordings: (recordings: any[]) => void
+    refreshCallRecordings: (recordings: any[]) => void
 
   }
 export const useCallStore = create<CallStore>((set,get) => ({
@@ -18,26 +17,20 @@ export const useCallStore = create<CallStore>((set,get) => ({
     upcomingCalls: [],
     loading: false,
 
-    setCalls: (calls) => {
-        const now = new Date()
-        const endedCalls = calls.filter(
-        ({ state: { startsAt, endedAt } }: Call) => startsAt && endedAt && endedAt > startsAt
-        )
-        const upcomingCalls = calls.filter(
-        ({ state: {startsAt, endedAt, custom } }: Call) => !endedAt && custom.description !== 'Instant Meeting' && startsAt && startsAt>now
-        )
+    setCalls: (calls:any[]) => {
+        const endedCalls = calls.filter((call : any) => call.isEnded)
+        const upcomingCalls = calls.filter((call : any) => !call.isStarted)
         set({endedCalls, upcomingCalls })
     },
     
     setLoading: (loading) => set({ loading }),
 
-    refreshCalls: (calls) => {
+    refreshCalls: (calls:any[]) => {
         get().setCalls(calls)
     },
+    setCallRecordings: (recordings:any[]) => set({ callRecordings: recordings }),
 
-    setCallRecordings: (recordings) => set({ callRecordings: recordings }),
-
-    refreshCallRecordings: (recordings) => {
+    refreshCallRecordings: (recordings:any[]) => {
         get().setCallRecordings(recordings)
     },
 }));

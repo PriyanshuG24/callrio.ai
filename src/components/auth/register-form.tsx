@@ -73,10 +73,10 @@ export default function RegisterForm() {
         if (error) throw error;
     
         // Optional: show a success toast
-        toast.success('Logged in successfully! Redirecting...');
+        toast.success('Redirecting...');
     
         // Use replace to prevent going back to login page
-        router.replace('/login');
+        router.replace('/login/?registered=true');
     
       } catch (error) {
         console.error('Google sign in failed:', error);

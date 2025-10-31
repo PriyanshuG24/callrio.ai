@@ -9,17 +9,34 @@ import { FiClock, FiCalendar, FiMessageSquare, FiFileText, FiActivity, FiDownloa
 import { getMeetingDuration } from "@/lib/utils";
 import { useGetCallDataById } from "@/hooks/useGetCallDataById";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import {isLinkedInConnected} from '@/actions/linkedinPostAction/auth'
+import { LinkedInPost } from "@/components/socialMediaPost/connectToLinkedin";
+import { PostToLinkedin } from "@/components/socialMediaPost/postToLinkedin";
+import { ArrowLeft } from "lucide-react";
+import { useRouter } from 'next/navigation';
 export default function PreviousMeetingPageDetails() {
+  const [showChat,setShowChat]=useState(false);
   const [messages, setMessages] = useState<Object[]>([]);
   const params = useParams();
+  const router = useRouter();
   const id = params.id as string;
-  const { callData, isCallLoading, fetchCallDataById, transcriptions,fetchSummaryById,isSummaryLoading,summary,downloadSummaryById } = useGetCallDataById(id);
+  const {
+    callData,
+    isCallLoading,
+    fetchCallDataById,
+    transcriptions,
+    fetchSummaryById,
+    isSummaryLoading,
+    summary,
+    downloadSummaryById,
+    meetingRecording
+  } = useGetCallDataById(id);
+
   useEffect(() => {
-    if (!id || callData) return;
-    const fxn=async()=>{
-      await fetchCallDataById();
-    }
-    fxn();
+    if (!id) return;
+
+    if (!callData) fetchCallDataById();
   }, [id]);
 
   useEffect(() => {
@@ -30,6 +47,7 @@ export default function PreviousMeetingPageDetails() {
     };
     loadData();
   }, [id, callData]);
+  
 
   if (isCallLoading || !callData) {
     return (
@@ -59,10 +77,19 @@ export default function PreviousMeetingPageDetails() {
       console.error("Error fetching summary:", err);
     }
   };
-
+  const toggleChat=()=>{
+    setShowChat(!showChat);
+  }
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
+        {/* i want this button at right end  */}
+        <div className="flex justify-end">
+          <Button variant="outline" className="flex items-center gap-2" onClick={()=>router.back()}>
+          <ArrowLeft className="h-4 w-4" />
+          Back
+        </Button> 
+        </div>
         {/* Header Section */}
         <div className="glass-card p-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -95,8 +122,8 @@ export default function PreviousMeetingPageDetails() {
                 </div>
                 <h2 className="text-xl font-semibold text-white">AI Summary</h2>
               </div>
-              <div className="flex items-center gap-2" >
-                <div className="p-2 bg-blue-500/20 rounded-lg cursor-pointer flex items-center gap-2" title="Generate Summary" onClick={()=>generateSummary()}>
+              <div className="flex items-center gap-2 " >
+                <div className="p-2 bg-blue-500/20 rounded-lg cursor-pointer flex items-center gap-2 text-blue-400 text-sm" title="Generate Summary" onClick={()=>generateSummary()}>
                   <FiStar className="text-blue-400 text-xl" />
                   {isSummaryLoading ? <span className="text-blue-600 text-sm">Generating...</span> : <span className="text-blue-400 text-sm">Generate</span>}
                 </div>
@@ -131,14 +158,21 @@ export default function PreviousMeetingPageDetails() {
                     </li>
                   ))
                 ) : (
-                  <p className="text-gray-500 text-sm">No key points available</p>
+                  <p className="text-gray-500 text-sm"> key points available</p>
                 )}
               </ul>
             </div>
           </div>
-
-          {/* Chat History */}
-          {/* <div className="glass-card p-6 lg:col-span-2 max-h-[600px] overflow-y-auto">
+          <div className="flex gap-2 justify-end mt-6"> 
+            <Button variant="outline" className="" onClick={toggleChat}>
+              {showChat ? 'Show Transcriptions' : 'Show Chat'}
+            </Button>
+            <PostToLinkedin meetingLink={meetingRecording} transcriptions={transcriptions} />
+          </div>
+        </div>
+        {/* Chat History */}
+          {showChat && (
+            <div className="glass-card p-6 lg:col-span-2 max-h-[600px] overflow-y-auto">
             <div className="flex items-center space-x-3 mb-6">
               <div className="p-2 bg-purple-500/20 rounded-lg">
                 <FiMessageSquare className="text-purple-400 text-xl" />
@@ -199,11 +233,10 @@ export default function PreviousMeetingPageDetails() {
                 <p className="text-gray-500 text-sm mt-1">The chat history will appear here</p>
               </div>
             )}
-          </div> */}
-        </div>
-
+          </div>
+          )}
         {/* Transcription Section */}
-        <div className="glass-card p-6">
+       {!showChat && ( <div className="glass-card p-6">
           <div className="flex items-center space-x-3 mb-6">
             <div className="p-2 bg-green-500/20 rounded-lg">
               <FiFileText className="text-green-400 text-xl" />
@@ -248,7 +281,7 @@ export default function PreviousMeetingPageDetails() {
               <p className="text-gray-500 text-sm mt-1">The meeting transcription will appear here when available</p>
             </div>
           )}
-        </div>
+        </div>)}
       </div>
     </div>
   );

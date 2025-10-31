@@ -65,7 +65,7 @@ export default function LoginForm() {
         callbackURL: '/dashboard', 
       });
       if (error) throw error;
-      toast.success('Logged in successfully! Redirecting...');
+      toast.success('Redirecting...');
       router.replace('/dashboard');
   
     } catch (error) {

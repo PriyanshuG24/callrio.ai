@@ -1,69 +1,87 @@
-import { useState,useRef } from "react";
+import { useState, useRef } from "react";
 import { getMeetingParticipants } from "../actions/dbAction/participant";
 import { getTranscriptions } from "../actions/dbAction/transcription";
 import { getMeetingById } from "../actions/dbAction/meeting";
-import { generateSummary ,downloadSummaryPDF,formateTranscription} from "../lib/utils";
+import { generateSummary, downloadSummaryPDF, formateTranscription } from "../lib/utils";
+import { getMeetingRecordings } from "../actions/dbAction/recording";
 
-export const useGetCallDataById = (meetingId:string) => {
-  const [callData, setCallData] = useState<any>(null);
-  const [transcriptions, setTranscriptions] = useState<Object[]>([]);
+import { useMeetingStore } from "@/store/meetingStore";
+import { saveSessionData, getSessionData } from "@/utils/sessionCache";
+
+export const useGetCallDataById = (meetingId: string) => {
+  const { getMeeting, storeMeeting } = useMeetingStore();
+  const cached = getMeeting(meetingId) || getSessionData(meetingId);
+
+  const [callData, setCallData] = useState<any>(cached?.meeting || null);
+  const [transcriptions, setTranscriptions] = useState<Object[]>(
+    cached?.transcriptions || []
+  );
+  const [meetingRecording, setMeetingRecording] = useState<string>(
+    cached?.recording || ""
+  );
+
   const [isCallLoading, setIsCallLoading] = useState(false);
   const [isSummaryLoading, setIsSummaryLoading] = useState(false);
-  const [summary,setSummary]=useState<any>(null);
-  const participantMap = useRef(new Map<string,string>());
-    const fetchTranscriptionFile = async (url: string) => {
-      const response = await fetch(url);
-      const text = await response.text(); 
-      const lines = text.split("\n").filter(Boolean);
-      const transcriptionData = lines.map((line) => JSON.parse(line));
-      return transcriptionData;
-    };
-  
-  const fetchCallDataById = async () => {
-    
-    setIsCallLoading(true);
+  const [summary, setSummary] = useState<any>(null);
 
+  const participantMap = useRef(new Map<string, string>());
+
+  const fetchTranscriptionFile = async (url: string) => {
+    const response = await fetch(url);
+    const text = await response.text();
+    return text.split("\n").filter(Boolean).map((line) => JSON.parse(line));
+  };
+
+  const fetchCallDataById = async (force = false) => {
+    if (!force && cached) return;
+
+    setIsCallLoading(true);
     try {
       const call = await getMeetingById(meetingId);
-      setCallData(call?.[0]);
-        try {
-          const data = await getTranscriptions(meetingId);
-          if (data?.length) {
-            const allLines = await Promise.all(
-              data.map(async (t) => {
-                try {
-                  return await fetchTranscriptionFile(t.url);
-                } catch (err) {
-                  console.error('Error fetching transcription file:', t.url, err);
-                  return [];
-                }
-              })
-            );
-            
-            const flatTranscriptions = allLines.flat();
-            
+      const recordings = await getMeetingRecordings(meetingId);
+      const transData = await getTranscriptions(meetingId);
+      const participants = await getMeetingParticipants(meetingId);
+
+      setCallData(call?.[0] || null);
+
+      if (recordings?.length) {
+        setMeetingRecording(recordings[0].url);
+      }
+
+      if (transData?.length) {
+        const allLines = await Promise.all(
+          transData.map(async (t) => {
             try {
-              const participants = await getMeetingParticipants(meetingId);
-              participants.forEach((p) => {
-                participantMap.current.set(p.participantId, p.participantName);
-              });
-            } catch (err) {
-              console.error('Error fetching participants:', err);
+              return await fetchTranscriptionFile(t.url);
+            } catch {
+              return [];
             }
-            
-            const enrichedTranscriptions = flatTranscriptions.map((t) => ({
-              ...t,
-              name: participantMap.current.get(t.speaker_id) || 'Unknown',
-            }));
-            
-            const updatedTranscriptions = formateTranscription(enrichedTranscriptions,data?.[0]?.start_time,data?.[0]?.end_time);
-            setTranscriptions(updatedTranscriptions);
-          }
-        } catch (transcriptionError) {
-          console.error('Error processing transcriptions:', transcriptionError);
-        }
-    } catch (err) {
-      console.error("Error fetching call or transcriptions:", err);
+          })
+        );
+
+        const flat = allLines.flat();
+
+        participants.forEach((p) =>
+          participantMap.current.set(p.participantId, p.participantName)
+        );
+
+        const enriched = flat.map((t) => ({
+          ...t,
+          name: participantMap.current.get(t.speaker_id) || "Unknown",
+        }));
+
+        const formatted = formateTranscription(enriched);
+        setTranscriptions(formatted);
+
+        const finalData = {
+          meeting: call?.[0] || null,
+          recording: recordings?.[0]?.url || "",
+          transcriptions: formatted,
+        };
+
+        storeMeeting(meetingId, finalData);
+        saveSessionData(meetingId, finalData);
+      }
     } finally {
       setIsCallLoading(false);
     }
@@ -71,21 +89,22 @@ export const useGetCallDataById = (meetingId:string) => {
 
   const fetchSummaryById = async () => {
     setIsSummaryLoading(true);
-    try {
-      const SummaryData = await generateSummary(transcriptions);
-      setSummary(SummaryData);
-    } catch (err) {
-      console.error("Error fetching summary:", err);
-    } finally {
-      setIsSummaryLoading(false);
-    }
+    const SummaryData = await generateSummary(transcriptions);
+    setSummary(SummaryData);
+    setIsSummaryLoading(false);
   };
-  const downloadSummaryById = async () => {
-    try {
-      downloadSummaryPDF(summary,callData);
-    } catch (err) {
-      console.error("Error downloading summary:", err);
-    }
+
+  const downloadSummaryById = () => downloadSummaryPDF(summary, callData);
+
+  return {
+    callData,
+    isCallLoading,
+    isSummaryLoading,
+    summary,
+    fetchCallDataById,
+    transcriptions,
+    fetchSummaryById,
+    downloadSummaryById,
+    meetingRecording,
   };
-  return {callData,isCallLoading,isSummaryLoading,summary, fetchCallDataById, transcriptions,fetchSummaryById,downloadSummaryById };
 };

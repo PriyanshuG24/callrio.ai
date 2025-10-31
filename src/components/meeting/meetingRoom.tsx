@@ -160,7 +160,8 @@ const MeetingRoom = () => {
     };
   }, [call, localParticipant, isRedirecting, router]);
   useEffect(() => {
-    if (isRecordingAvailable && call?.state?.endedAt) {
+    if (isRecordingAvailable && call?.state?.endedAt && transcriptionReady ) {
+      console.log("Recording available and transcription ready");
       if (recordingReady && transcriptionReady) {
         setIsRedirecting(true); 
         const timer = setTimeout(() => {
@@ -169,7 +170,8 @@ const MeetingRoom = () => {
         return () => clearTimeout(timer);
       }
     }
-    else if (!isRecordingAvailable && call?.state?.endedAt){
+    else if (!isRecordingAvailable && call?.state?.endedAt && transcriptionReady){
+      console.log("Recording not available and transcription ready");
       setIsRedirecting(true); 
       const timer = setTimeout(() => {
         router.replace("/dashboard");

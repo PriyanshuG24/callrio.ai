@@ -55,33 +55,46 @@ export const getMeetingDuration = (start?: string | Date, end?: string | Date) =
   }
 };
 
-export const formateTranscription =  (transcription:any,start_time:Date,end_time:Date) => {
-  const data:any=[];
-  let prevSpeaker=transcription[0].name;
-  let text="";
-  let time=0;
-  transcription.forEach((t:any) => {
-    if(t.name!==prevSpeaker){
+export const formateTranscription = (transcription: any[]) => {
+  if (!Array.isArray(transcription) || transcription.length === 0) {
+    return [];
+  }
+
+  const data: any[] = [];
+  let prevSpeaker = transcription[0]?.name || "Unknown";
+  let text = "";
+  let time = 0;
+
+  transcription.forEach((t: any) => {
+    if (t.name !== prevSpeaker) {
       data.push({
-        text:text,
-        duration:time<60?`${time.toFixed(2)} sec`:time<3600?`${time.toFixed(2)} min`:`${time.toFixed(2)} hr`,
-        speakerName:t.name,
-      })
-      time=0;
-      text="";
-      
+        text,
+        duration: time < 60 ? `${time.toFixed(2)} sec` :
+                time < 3600 ? `${(time / 60).toFixed(2)} min` :
+                              `${(time / 3600).toFixed(2)} hr`,
+        speakerName: prevSpeaker,
+      });
+
+      time = 0;
+      text = "";
     }
-    time+=((t.stop_ts-t.start_ts)/1000);
-    text+=t.text;
-    prevSpeaker=t.name;
-  })
+
+    time += ((t.stop_ts - t.start_ts) / 1000);
+    text += t.text;
+    prevSpeaker = t.name;
+  });
+
   data.push({
-    text:text,
-    duration:time<60?`${time.toFixed(2)} sec`:time<3600?`${time.toFixed(2)} min`:`${time.toFixed(2)} hr`,
-    speakerName:prevSpeaker
-  })
+    text,
+    duration: time < 60 ? `${time.toFixed(2)} sec` :
+            time < 3600 ? `${(time / 60).toFixed(2)} min` :
+                          `${(time / 3600).toFixed(2)} hr`,
+    speakerName: prevSpeaker
+  });
+
   return data;
-}
+};
+
 
 export const generateSummary = async (transcription:any) => {
   const fullTranscript = transcription
@@ -111,6 +124,64 @@ export const generateSummary = async (transcription:any) => {
   };
   return callData;
 }
+
+
+export const thankyouGeneratedMessage= async(command:string)=>{
+  const prompt = `
+    User input:${command} 
+    Write a short and specific LinkedIn thank-you post for meeting participants consider the user input too.
+
+    Tone: professional, appreciative, concise.
+    Goal: thank attendees and acknowledge contributions.
+
+    Output format:
+    1-2 meaningful sentences
+    1 line about collaboration/learning
+    Relevant hashtags (3-5 only)
+    Add 2 to 5 emojis if needed.`
+  ;
+
+
+  const model = new GoogleGenerativeAI(`${process.env.NEXT_PUBLIC_GOOGLE_GENERATIVE_AI_API_KEY}`).getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+  const content = await model.generateContent(prompt);
+  const rawText = content.response.text().trim();
+  return rawText;
+
+}
+
+export const keyPointsGeneratedMessage= async(command:string,transcriptions?:any,recordingLink?:string)=>{
+  const prompt = `
+Generate concise meeting outcome bullets.
+
+Rules:
+- Heading should be "Meeting Outcomes : "
+- Also add subheading according the action items, decisions, and next steps.
+- Only action items, decisions, and next steps.
+- If transcription or input is minimal, return only 2–3 simple general bullets.
+- If no real data, provide a brief generic outcome summary.
+- If recording link is not available then dont write it.
+- Keep it business-focused, no hype, no fluff.
+- Use crisp bullet points (•).
+- Add 2 relevant hashtags at the end (no more) and in new line also.
+
+User Notes:
+${command || "No user notes provided"}
+
+Meeting Transcript:
+${transcriptions?.length ? JSON.stringify(transcriptions) : "No transcript available"}
+
+Meeting Recording Link:${recordingLink}
+
+Output must be clean, specific, and professional.
+`;
+
+
+  const model = new GoogleGenerativeAI(`${process.env.NEXT_PUBLIC_GOOGLE_GENERATIVE_AI_API_KEY}`).getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+  const content = await model.generateContent(prompt);
+  const rawText = content.response.text().trim();
+  return rawText;
+}
+
 
 
 export function downloadSummaryPDF(data: any, callData: any) {

@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { Plus, Clock, Calendar,CalendarClock, Video, ChevronRight, ChevronLeft,User } from 'lucide-react';
 import { useSession } from '@/lib/auth-client'; 
 import Link from 'next/link';
+import { LogoutButton } from '../auth/logout';
 
 const navItems = [
   { name: 'New Meeting', href: '/dashboard/create-meeting', icon: Plus, requiresAuth: true },
@@ -33,7 +34,7 @@ export function Sidebar({ isCollapsed, onToggleCollapse }: { isCollapsed: boolea
       )}
     >
      
-      <div className="absolute -right-3 top-26 z-10 hidden md:block">
+      <div className="absolute -right-3 top-26 z-10 md:block">
         <button
           onClick={onToggleCollapse}
           className="h-6 w-6 rounded-full border border-gray-300 bg-white dark:bg-gray-700 shadow-md flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
@@ -66,6 +67,7 @@ export function Sidebar({ isCollapsed, onToggleCollapse }: { isCollapsed: boolea
             );
           })}
         </ul>
+        
       </nav>
     </aside>
   );

@@ -9,7 +9,8 @@ import { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import { toast } from 'sonner';
 import {MeetingLinkDialog} from '@/components/meeting/meetingLinkDialog';
-
+import { useRouter } from 'next/navigation';
+import { ArrowLeft } from 'lucide-react';
 export default function SchedulePage() {
   const { 
     values,  
@@ -21,6 +22,7 @@ export default function SchedulePage() {
   const [showDialog, setShowDialog] = useState(false);
   const [meetingLink, setMeetingLink] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
   const handleCreateMeeting = async() => {
     try {
       setIsLoading(true);
@@ -42,13 +44,21 @@ export default function SchedulePage() {
   return (
     <div className="mx-auto max-w-2xl py-8 px-4">
       <div className="space-y-8">
-        <div>
+        <div className="flex justify-between items-center">
+          <div>
           <h1 className="text-3xl font-bold">Schedule a Meeting</h1>
           <p className="text-muted-foreground mt-2">
             Set up a new meeting with date, time, and details.
           </p>
         </div>
-
+        <div className="flex justify-end">
+          <Button variant="outline" className="flex items-center gap-2" onClick={()=>router.back()}>
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </Button> 
+        </div>
+        </div>
+               
         <div className="space-y-6">
           <div>
             <Label htmlFor="description" className='mx-1'>Meeting Title</Label>
@@ -88,7 +98,7 @@ export default function SchedulePage() {
             <Button
               type="button"
               variant="outline"
-              onClick={() => window.history.back()}
+              onClick={() => router.back()}
               disabled={isLoading}
             >
               Cancel

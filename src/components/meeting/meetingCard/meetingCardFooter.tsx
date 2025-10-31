@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Copy, Play, Video, LucideArrowDownLeftFromSquare } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { InvitationPostToLinkedin } from "@/components/socialMediaPost/invitationPostToLinkedin";
 interface MeetingCardFooterProps {
   meeting: any;
   type: "upcoming" | "ended" | "recordings";
@@ -39,7 +40,7 @@ export const MeetingCardFooter = ({ meeting, type, onStartMeeting, onCopyLink }:
   if (type === "ended") {
     return (
       <div className="mt-auto p-4 border-t">
-        <div className="flex items-center justify-center text-sm text-muted-foreground py-2 cursor-pointer" onClick={() => router.replace(`/dashboard/previous/${meeting.meetingId}`)}>
+        <div className="flex items-center justify-center text-sm text-muted-foreground py-2 cursor-pointer" onClick={() => router.push(`/dashboard/previous/${meeting.meetingId}`)}>
           <LucideArrowDownLeftFromSquare className="h-4 w-4 mr-2 text-red-500" />
           <span><b className="text-primary">More Details : Click to view</b></span>
         </div>
@@ -48,7 +49,7 @@ export const MeetingCardFooter = ({ meeting, type, onStartMeeting, onCopyLink }:
   }
 
   return (
-    <div className="flex items-center justify-center border-t py-2 px-4">
+    <div className="flex flex-col gap-2 items-center justify-center border-t py-2 px-4">
       <div className="flex gap-2">
         <Button variant="outline" size="sm" onClick={onCopyLink}>
           <Copy className="h-4 w-4 mr-2" />
@@ -58,6 +59,9 @@ export const MeetingCardFooter = ({ meeting, type, onStartMeeting, onCopyLink }:
           <Video className="h-4 w-4 mr-2" />
           Start
         </Button>
+      </div>
+      <div>
+        <InvitationPostToLinkedin meetingId={meeting.meetingId}/>
       </div>
     </div>
   );

@@ -8,6 +8,7 @@ import { useSession } from "@/lib/auth-client";
 import Link from "next/link";
 import { LogoutButton } from "@/components/auth/logout";
 import { LayoutDashboardIcon } from "lucide-react";
+import { LinkedInPost } from "@/components/socialMediaPost/connectToLinkedin";
 
 export default function ProfilePage() {
   const { data: session, isPending } = useSession();
@@ -33,12 +34,15 @@ export default function ProfilePage() {
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">Your Profile</h1>
           </div>
-          <Button variant="outline" className="cursor-pointer flex items-center gap-2 hover:bg-gray-500 dark:hover:bg-gray-800">
+          <div className="flex items-center gap-2">
+            <Button variant="outline" className="cursor-pointer flex items-center gap-2 hover:bg-gray-500 dark:hover:bg-gray-800">
             <Link href="/dashboard" className="flex items-center gap-2">
               <LayoutDashboardIcon className="h-4 w-4" />
               Go to Dashboard
             </Link>
           </Button>
+          <LinkedInPost/>
+          </div>
         </div>
 
         <div className="grid gap-6 ">

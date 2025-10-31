@@ -10,6 +10,7 @@ import { ThemeToggle } from '@/components/theme/theme-toggle';
 import { RefreshButton } from '@/components/theme/refresh-button';
 import {useCallStore} from '@/store/callStore'
 import { getMeetingDuration,formatTime } from '@/lib/utils';
+import { CollapsibleSidebar } from '@/components/layout/collapse-sidebar';
 export default function DashboardPage() {
   const router = useRouter();
   const { data: session } = useSession();
@@ -41,7 +42,8 @@ export default function DashboardPage() {
           <h1 className="text-3xl font-bold">Welcome back, {session?.user?.name?.split(' ')[0] || 'User'}</h1>
           <p className="text-gray-500 dark:text-gray-400">Here's what's happening with your meetings</p>
         </div>
-        <div className="flex items-center gap-4 w-full md:w-auto">
+        <div className="flex flex-wrap items-center justify-between gap-4 w-full md:w-auto">
+          <CollapsibleSidebar/>
           <ThemeToggle/>
           <RefreshButton/>
         </div>

@@ -41,5 +41,5 @@ export async function GET(req: NextRequest) {
     expiresIn: (Date.now()+tokenData.expires_in*1000).toString(),
   });
 
-  return NextResponse.redirect("http://localhost:3000/dashboard");
+  return NextResponse.redirect("https://callrio-ai.vercel.app/dashboard");
 }

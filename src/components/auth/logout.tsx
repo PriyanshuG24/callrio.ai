@@ -9,6 +9,8 @@ export function LogoutButton() {
 
   const handleLogout = async () => {
     await signOut();
+    localStorage.removeItem('call-store-storage');
+    sessionStorage.removeItem('meeting-session-cache');
     router.replace('/');
   };
 

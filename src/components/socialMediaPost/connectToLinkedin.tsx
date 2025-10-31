@@ -15,7 +15,7 @@ export const LinkedInPost = () => {
     }, [])
     const handleLogin = () => {
         const clientId = process.env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID!;
-        const redirectUri = "http://localhost:3000/api/linkedin/callback";
+        const redirectUri = "https://callrio-ai.vercel.app/api/linkedin/callback";
         const scope = "openid profile email w_member_social"; // scopes your app uses
         const state = crypto.randomUUID(); // optional: protect against CSRF
 

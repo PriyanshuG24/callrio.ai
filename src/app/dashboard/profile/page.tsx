@@ -5,32 +5,37 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Calendar, LogOut, Mail } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
-import Link from "next/link";
-import { LogoutButton } from "@/components/auth/logout";
 import { LayoutDashboardIcon } from "lucide-react";
 import { LinkedInPost } from "@/components/socialMediaPost/connectToLinkedin";
 import { useRouter } from "next/navigation";
 import { removeLinkedInToken } from "@/actions/linkedinPostAction/auth";
 import { signOut } from "@/lib/auth-client";
+import { useState } from "react";
+import Loader from "@/components/ui/loader";
 
 export default function ProfilePage() {
-
   const { data: session, isPending } = useSession();
-    const router = useRouter();
-    if (isPending) {
-      return null;
-    }
-    const handleLogout = async () => {
+  const router = useRouter();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true); 
       localStorage.removeItem('call-store-storage');
       sessionStorage.removeItem('meeting-session-cache');
       await removeLinkedInToken();
-      const {data}=await signOut();
-      if(data?.success){
-        router.push(`${process.env.NEXT_PUBLIC_BASE_URL}/login`);
-      }
-    };
+      await signOut();
+      router.replace('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+      setIsLoggingOut(false);
+    }
+  };
+  if (isPending || isLoggingOut || !session) {
+    return <Loader/>; 
+  }
 
-    const initials = session?.user?.name
+  const initials = session?.user?.name
     ?.split(' ')
     .map(name => name[0])
     .join('')
@@ -45,12 +50,10 @@ export default function ProfilePage() {
           </div>
           <div className="flex items-center justify-between gap-2">
             <div>
-              <Button variant="outline" className="cursor-pointer flex items-center gap-2 hover:bg-gray-500 dark:hover:bg-gray-800">
-              <Link href="/dashboard" className="flex items-center gap-2">
+              <Button variant="outline" className="cursor-pointer flex items-center gap-2 hover:bg-gray-500 dark:hover:bg-gray-800" onClick={()=>router.push('/dashboard')}>
                 <LayoutDashboardIcon className="h-4 w-4" />
                Dashboard
-              </Link>
-            </Button>
+              </Button>
             </div>
             <div>
           <LinkedInPost/>

@@ -8,47 +8,51 @@ export const createMeetingCall = async ({meetingId,title, ownerId}: {meetingId: 
     console.log("Meeting Id",meetingId);
     console.log("Meeting title",title);
     console.log("Meeting owner Id",ownerId);
-    await db.insert(meeting).values({
+    const data=await db.insert(meeting).values({
       meetingId: meetingId,
       title: title || "Meeting",
       ownerId: ownerId,
       createdAt: new Date(),
       isStarted: false,
       isEnded: false,
-    })
+    }).returning()
     return {
+      data:data[0],
       success: true,
       message: "Meeting created successfully",
     }
   } catch (error) {
     console.error(error);
     return {
+      data:null,
       success: false,
       message: "Failed to create meeting",
     }
   }
 }
-export const createScheduleMeetingCall = async ({meetingId,title, ownerId,setDate}: {meetingId: string;title: string; ownerId: string; setDate: Date}) => {
+export const createScheduleMeetingCall = async ({meetingId,title, ownerId,setDate}: {meetingId: string;title: string; ownerId: string; setDate: string}) => {
   try {
     console.log("Meeting Id",meetingId);
     console.log("Meeting title",title);
     console.log("Meeting owner Id",ownerId);
-    await db.insert(meeting).values({
+    const data=await db.insert(meeting).values({
       meetingId: meetingId,
       title: title || "Meeting",
       ownerId: ownerId,
       isStarted: false,
       isEnded: false,
-      startAt: setDate,
+      startAt: new Date(setDate),
       createdAt: new Date(),
-    })
+    }).returning()
     return {
+      data:data[0],
       success: true,
       message: "Meeting created successfully",
     }
   } catch (error) {
     console.error(error);
     return {
+      data:null,
       success: false,
       message: "Failed to create meeting",
     }
@@ -74,18 +78,18 @@ export const startMeeting = async (meetingId: string) => {
 
 export const endMeeting = async (meetingId: string) => {
   try {
-    await db
+    const data=await db
       .update(meeting)
       .set({
         isEnded: true,
         endedAt: new Date(),
       })
-      .where(eq(meeting.meetingId, meetingId) && eq(meeting.isEnded, false));
+      .where(eq(meeting.meetingId, meetingId) && eq(meeting.isEnded, false)).returning();
 
-    return { success: true, message: "Meeting ended!" };
+    return {data:data[0], success: true, message: "Meeting ended!" };
   } catch (error) {
     console.error(error);
-    return { success: false, message: "Failed to end meeting" };
+    return {data:null, success: false, message: "Failed to end meeting" };
   }
 };
 

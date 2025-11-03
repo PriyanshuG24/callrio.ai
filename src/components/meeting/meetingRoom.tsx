@@ -17,6 +17,8 @@ import {endMeeting } from '@/actions/dbAction/meeting';
 import {createMeetingParticipant,createMeetingParticipantSessionHistory,updateMeetingParticipantSessionHistory} from '@/actions/dbAction/participant';
 import {createMeetingRecording} from '@/actions/dbAction/recording';
 import {createMeetingTranscription} from '@/actions/dbAction/transcription';
+import { useCallStore } from '@/store/callStore';
+import { id } from 'zod/v4/locales';
 type CallLayoutType = 'grid' | 'speaker-left' | 'speaker-right';
 
 const MeetingRoom = () => {
@@ -38,6 +40,7 @@ const MeetingRoom = () => {
   const [isRecordingAvailable, setIsRecordingAvailable] = useState(false);
   const [transcriptionReady, setTranscriptionReady] = useState(false);
   const [message,setMessage] = useState('');
+  const {addEndedCall,addCallRecording}=useCallStore()
 
   const activeParticipantMap=useRef(new Map<string,string>());
   const CallLayout = useCallback(() => {
@@ -70,9 +73,22 @@ const MeetingRoom = () => {
     };
     const onEnded = async () => {
       await cleanupMedia();
-      await endMeeting(call?.id);
+      const {data,success,message}=await endMeeting(call?.id);
       setIsRedirecting(true);
-      setMessage("Meeting ended, redirecting..");    
+      setMessage(message);  
+      if(success && data?.id){
+        addEndedCall({
+          id:data?.id,
+          meetingId:data?.meetingId,
+          title:data?.title,
+          ownerId:data?.ownerId,
+          isStarted:data?.isStarted,
+          isEnded:data?.isEnded,
+          startAt:data?.startAt,
+          endedAt:data?.endedAt,
+          createdAt:data?.createdAt,
+        });  
+      }
     };
     const onJoined = async (event: any) => {
       if (event.participant.userId !== localParticipant?.userId) {
@@ -109,13 +125,23 @@ const MeetingRoom = () => {
       console.log("Recording ready", event);
       const { call_recording } = event;
       if (call_recording) {
-        await createMeetingRecording(
+        const {data,success,message}=await createMeetingRecording(
           call?.id,
           call_recording.url,
           call_recording.session_id,
           new Date(call_recording.start_time),
           new Date(call_recording.end_time)
         );
+        if(success && data?.id){
+          addCallRecording({
+            id:data?.id,
+            meetingId:data?.meetingId,
+            url:data?.url,
+            sessionId:data?.sessionId,
+            start_time:data?.start_time,
+            end_time:data?.end_time,
+          });
+        }
       }
       setRecordingReady(true);
     };

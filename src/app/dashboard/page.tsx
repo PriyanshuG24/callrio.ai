@@ -9,17 +9,21 @@ import { useSession } from '@/lib/auth-client';
 import { ThemeToggle } from '@/components/theme/theme-toggle';
 import { RefreshButton } from '@/components/theme/refresh-button';
 import {useCallStore} from '@/store/callStore'
-import { getMeetingDuration,formatTime } from '@/lib/utils';
+import { getMeetingDuration,formatTime,formatDate } from '@/lib/utils';
 import { CollapsibleSidebar } from '@/components/layout/collapse-sidebar';
+import { useEffect } from 'react';
+import { getAllMeeting } from '@/actions/dbAction/meeting'
+import { getMeetingRecordings } from '@/actions/dbAction/recording'
+import { useStreamVideoClient } from "@stream-io/video-react-sdk"
+
 export default function DashboardPage() {
   const router = useRouter();
-  const { data: session } = useSession();
-  const {upcomingCalls,callRecordings} = useCallStore()
+  const {upcomingCalls,callRecordings,setLoading,refreshCalls,refreshCallRecordings,endedCalls} = useCallStore()
   const upcomingMeetings = upcomingCalls.slice(0, 2).map((call) => ({
     id: call.id,
     title: call.title,
-    time: call.startAt?.toLocaleTimeString() || 'Unknown Time',
-    date: call.startAt?.toLocaleDateString() || 'Unknown Date',
+    time: formatTime(call.startAt) || 'Unknown Time',
+    date: formatDate(call.startAt) || 'Unknown Date',
   }));
   const recentRecordings = callRecordings.slice(0, 4).map((recording) => ({
     title: 'Recording',
@@ -32,7 +36,30 @@ export default function DashboardPage() {
     { icon: <Combine className="w-5 h-5" />, label: 'Join Meeting', action: () => router.replace('/dashboard/join') },
     { icon: <Calendar className="w-5 h-5" />, label: 'Schedule Meeting', action: () => router.replace('/dashboard/schedule') },
   ];
-
+  const client = useStreamVideoClient()
+  const { data: session } = useSession()
+  const userId = session?.user.id
+  useEffect(() => {
+    const isFetchedOrNot=localStorage.getItem('call-store-storage')
+    if(isFetchedOrNot){
+      return
+    }
+    const fetchCallsData=async()=>{
+      if(!client || !userId ) return
+      try {
+          setLoading(true)
+          const data=await getAllMeeting(userId)        
+          const recordings=await Promise.all(data.map((meeting)=>getMeetingRecordings(meeting.meetingId)))
+          refreshCalls(data)
+          refreshCallRecordings(recordings.flat())
+      } catch (err) {
+          console.log(err)  
+        } finally {
+          setLoading(false)
+        }
+    }
+    fetchCallsData()
+  }, [])
   return (
 
     <div className="container mx-auto px-4 py-8">

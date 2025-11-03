@@ -31,7 +31,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div className="flex h-screen">
         <div className="sm:block hidden">
           <div
-          className={`${isSidebarCollapsed ? "w-16 mr-4" : "w-64"} transition-all duration-300 ${!match ? "hidden" : ""}`}
+          className={`${isSidebarCollapsed ? "w-16 mr-4" : "w-50"} transition-all duration-300 ${!match ? "hidden" : ""}`}
         >
           <Sidebar isCollapsed={isSidebarCollapsed} onToggleCollapse={toggleSidebar} />
         </div>

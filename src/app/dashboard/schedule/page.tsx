@@ -26,7 +26,7 @@ export default function SchedulePage() {
   const handleCreateMeeting = async() => {
     try {
       setIsLoading(true);
-      const newMeeting = await createMeeting(false,values.dateTime as Date);
+      const newMeeting = await createMeeting(false,values.dateTime as Date,values.description);
       if (!newMeeting?.id) {
         throw new Error("Meeting ID not returned");
       }
@@ -94,22 +94,26 @@ export default function SchedulePage() {
             </div>
           </div>
 
-          <div className="flex justify-end space-x-4 pt-4">
-            <Button
+          <div className="flex items-center justify-between pt-4">
+            <div>
+              <Button
               type="button"
               variant="outline"
-              onClick={() => router.back()}
+              onClick={() => router.push('/dashboard')}
               disabled={isLoading}
             >
               Cancel
             </Button>
-            <Button 
+            </div>
+            <div>
+              <Button 
               onClick={handleCreateMeeting}
               disabled={isLoading || !values.dateTime || !user}
               className="w-full sm:w-auto"
             >
               {isLoading ? 'Scheduling...' : 'Schedule Meeting'}
             </Button>
+            </div>
           </div>
         </div>
       </div>

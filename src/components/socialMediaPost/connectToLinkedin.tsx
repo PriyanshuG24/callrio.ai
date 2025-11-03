@@ -1,10 +1,8 @@
 'use client'
-import { Button } from "@/components/ui/button";
 import {FiLinkedin} from 'react-icons/fi'
 import { useState,useEffect } from "react";
 import {isLinkedInConnected,removeLinkedInToken} from '@/actions/linkedinPostAction/auth'
 export const LinkedInPost = () => {
-    //i also want to change the heading like linkedin connected in button and it should be in green color
     const [isConnected, setIsConnected] = useState(false);
     useEffect(() => {
         const checkLinkedInConnected = async () => {
@@ -15,7 +13,7 @@ export const LinkedInPost = () => {
     }, [])
     const handleLogin = () => {
         const clientId = process.env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID!;
-        const redirectUri = "https://callrio-ai.vercel.app/api/linkedin/callback";
+        const redirectUri = `${process.env.NEXT_PUBLIC_BASE_URL}/api/linkedin/callback`;
         const scope = "openid profile email w_member_social"; // scopes your app uses
         const state = crypto.randomUUID(); // optional: protect against CSRF
 

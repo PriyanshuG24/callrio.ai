@@ -34,14 +34,18 @@ export default function ProfilePage() {
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">Your Profile</h1>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" className="cursor-pointer flex items-center gap-2 hover:bg-gray-500 dark:hover:bg-gray-800">
-            <Link href="/dashboard" className="flex items-center gap-2">
-              <LayoutDashboardIcon className="h-4 w-4" />
-              Go to Dashboard
-            </Link>
-          </Button>
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <Button variant="outline" className="cursor-pointer flex items-center gap-2 hover:bg-gray-500 dark:hover:bg-gray-800">
+              <Link href="/dashboard" className="flex items-center gap-2">
+                <LayoutDashboardIcon className="h-4 w-4" />
+               Dashboard
+              </Link>
+            </Button>
+            </div>
+            <div>
           <LinkedInPost/>
+          </div>
           </div>
         </div>
 

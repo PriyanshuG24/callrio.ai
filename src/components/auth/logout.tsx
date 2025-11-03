@@ -3,15 +3,17 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { signOut } from '@/lib/auth-client';
 import { ArrowBigLeft } from 'lucide-react';
+import {removeLinkedInToken} from '@/actions/linkedinPostAction/auth'
 
 export function LogoutButton() {
   const router = useRouter();
 
   const handleLogout = async () => {
-    await signOut();
+    await removeLinkedInToken()
     localStorage.removeItem('call-store-storage');
     sessionStorage.removeItem('meeting-session-cache');
-    router.replace('/');
+    await signOut();
+    router.replace('/login');
   };
 
   return (

@@ -211,3 +211,7 @@
 .floating {
   animation: float 6s ease-in-out infinite;
 }
+
+html {
+  scroll-behavior: smooth;
+}

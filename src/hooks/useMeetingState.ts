@@ -6,7 +6,7 @@ import { useStreamVideoClient } from '@stream-io/video-react-sdk';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import {createMeetingCall, createScheduleMeetingCall} from '@/actions/dbAction/meeting';
-
+import { useCallStore } from '@/store/callStore';
 interface MeetingState {
   dateTime: Date | null;
   description: string;
@@ -25,8 +25,8 @@ export const useMeetingState = () => {
   const { data: user } = useSession();
   const client = useStreamVideoClient();
   const [isLoading, setIsLoading] = useState(false);
-
-  const createMeeting = async (isInstant = true,setDate: Date) => {
+  const {addUpcomingCall}=useCallStore()
+  const createMeeting = async (isInstant = true,setDate: Date,meetingName:string) => {
     if (!user || !client) {
       toast.error('Please sign in to create a meeting');
       return;
@@ -48,29 +48,39 @@ export const useMeetingState = () => {
           },
           starts_at: setDate.toISOString(),
           custom: {
-            description:
-              values.description || (isInstant ? 'Instant Meeting' : 'Scheduled Meeting'),
+            description:meetingName || 'Meeting'
           },
         },
       });
       setCallDetails(call);
       if (isInstant && !values.description) {
-        const {success, message} = await createMeetingCall({
+        await createMeetingCall({
           meetingId: id,
-          title: call.state.custom?.description,
+          title: meetingName || 'Meeting',
           ownerId: user.user.id,
         })
-        console.log(success, message,id)
         toast.success(`Meeting ${isInstant ? 'created' : 'scheduled'} successfully!`);
         router.replace(`/dashboard/meeting/${id}`);
       } else if (!isInstant) {
-        const {success, message} = await createScheduleMeetingCall({
+
+        const {success,data} = await createScheduleMeetingCall({
           meetingId: id,
-          title: call.state.custom?.description,
+          title: meetingName || 'Meeting',
           ownerId: user.user.id,
-          setDate: setDate,
+          setDate: setDate.toISOString(),
         })
-        console.log(success, message,id)
+        if(success && data){
+          addUpcomingCall({
+            id:data?.id,
+            meetingId:data?.meetingId,
+            title:data?.title,
+            ownerId:data?.ownerId,
+            startAt:setDate,
+            isStarted:false,
+            isEnded:false,
+            createdAt:data?.createdAt,
+          })
+        }
         toast.success(`Meeting ${isInstant ? 'created' : 'scheduled'} successfully!`);
         router.replace('/dashboard/schedule');
       }

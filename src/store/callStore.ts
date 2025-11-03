@@ -12,6 +12,9 @@ interface CallStore {
   setCallRecordings: (recordings: any[]) => void
   refreshCallRecordings: (recordings: any[]) => void
   clearStore: () => void 
+  addUpcomingCall: (call: any) => void
+  addEndedCall: (call: any) => void 
+  addCallRecording: (call: any) => void
 }
 
 export const useCallStore = create<CallStore>()(
@@ -27,7 +30,6 @@ export const useCallStore = create<CallStore>()(
         const upcomingCalls = calls.filter((call:any) => !call.isStarted);
         set({ endedCalls, upcomingCalls });
       },
-
       setLoading: (loading) => set({ loading }),
 
       refreshCalls: (calls:any[]) => {
@@ -35,7 +37,19 @@ export const useCallStore = create<CallStore>()(
       },
 
       setCallRecordings: (recordings:any[]) => set({ callRecordings: recordings }),
-
+      addCallRecording: (call:any) =>
+        set((state) => ({
+          callRecordings: [...state.callRecordings, call],
+        })),
+      addUpcomingCall: (call:any) =>
+        set((state) => ({
+          upcomingCalls: [...state.upcomingCalls, call],
+        })),
+      addEndedCall: (call:any) =>
+        set((state) => ({
+          endedCalls: [...state.endedCalls, call],
+          upcomingCalls: state.upcomingCalls.filter((c) => c.meetingId !== call.meetingId)
+        })),
       refreshCallRecordings: (recordings:any[]) => {
         get().setCallRecordings(recordings);
       },

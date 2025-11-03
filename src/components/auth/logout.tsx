@@ -7,11 +7,10 @@ import {removeLinkedInToken} from '@/actions/linkedinPostAction/auth'
 
 export function LogoutButton() {
   const router = useRouter();
-
   const handleLogout = async () => {
-    await removeLinkedInToken()
     localStorage.removeItem('call-store-storage');
     sessionStorage.removeItem('meeting-session-cache');
+    await removeLinkedInToken();
     await signOut();
     router.replace('/login');
   };

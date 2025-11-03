@@ -23,10 +23,10 @@ export default function ProfilePage() {
     const handleLogout = async () => {
       localStorage.removeItem('call-store-storage');
       sessionStorage.removeItem('meeting-session-cache');
-      const{success}=await removeLinkedInToken();
-      if(success){
-        await signOut();
-        router.replace('/login');
+      await removeLinkedInToken();
+      const {data}=await signOut();
+      if(data?.success){
+        router.push(`${process.env.NEXT_PUBLIC_BASE_URL}/login`);
       }
     };
 

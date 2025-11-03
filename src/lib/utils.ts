@@ -34,25 +34,34 @@ export const formatTime = (dateString?: string | Date | number) => {
 export const getMeetingDuration = (start?: string | Date, end?: string | Date) => {
   if (!start || !end) return "N/A";
   try {
-    const startDate =formatTime(start)
-    const endDate =formatTime(end)
-    const [startHours, startMinutes, startSeconds] = startDate.replace("AM","").replace("PM","").split(":").map(Number);
-    const [endHours, endMinutes, endSeconds] = endDate.replace("AM","").replace("PM","").split(":").map(Number);
-    let duration = Math.abs((endHours - startHours)) * 60 + Math.abs((endMinutes - startMinutes)) + Math.abs((endSeconds - startSeconds))/60;
-    if(duration<1){
-      duration*=60;
-      return `${duration.toFixed(2)} sec`;
-    }
-    else if(duration<60){
-      return `${duration.toFixed(2)} min`;
-    }
-    else{
-      duration/=60;
-      return `${duration.toFixed(2)} hr`;
-    }
-  } catch {
-    return "N/A";
+  const startDate = formatTime(start);
+  const endDate = formatTime(end);
+
+  const convertToSeconds = (time: string) => {
+    const [hms, period] = time.split(" ");
+    let [h, m, s] = hms.split(":").map(Number);
+    
+    if (period === "PM" && h !== 12) h += 12;
+    if (period === "AM" && h === 12) h = 0;
+
+    return h * 3600 + m * 60 + s;
+  };
+
+  const startSec = convertToSeconds(startDate);
+  const endSec = convertToSeconds(endDate);
+
+  let diffSec = Math.abs(endSec - startSec);
+
+  if (diffSec < 60) {
+    return `${diffSec.toFixed(0)} sec`;
+  } else if (diffSec < 3600) {
+    return `${(diffSec / 60).toFixed(2)} min`;
+  } else {
+    return `${(diffSec / 3600).toFixed(2)} hr`;
   }
+} catch {
+  return "N/A";
+}
 };
 
 export const formateTranscription = (transcription: any[]) => {

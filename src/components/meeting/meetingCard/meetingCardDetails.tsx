@@ -46,7 +46,7 @@ export const MeetingCardDetails = ({ meeting, type }: MeetingCardDetailsProps) =
       </div>
     );
   }
-  if (type === "recordings") {
+  if (type === "recordings") {  
     return (
       <div className="px-4 pb-4 space-y-2">
         <div className="flex items-center text-sm text-muted-foreground">

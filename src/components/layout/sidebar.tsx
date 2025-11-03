@@ -2,10 +2,12 @@
 
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Plus, Clock, Calendar,CalendarClock, Video, ChevronRight, ChevronLeft,User } from 'lucide-react';
+import { Plus, Clock, Calendar,CalendarClock, Video, ChevronRight, ChevronLeft,User,LogOut } from 'lucide-react';
 import { useSession } from '@/lib/auth-client'; 
 import Link from 'next/link';
-import { LogoutButton } from '../auth/logout';
+import { useRouter } from 'next/navigation';
+import { signOut } from '@/lib/auth-client';
+import { removeLinkedInToken } from '@/actions/linkedinPostAction/auth';
 
 const navItems = [
   { name: 'New Meeting', href: '/dashboard/create-meeting', icon: Plus, requiresAuth: true },
@@ -17,20 +19,27 @@ const navItems = [
 ];
 
 export function Sidebar({ isCollapsed, onToggleCollapse }: { isCollapsed: boolean; onToggleCollapse: () => void }) {
-  const pathname = usePathname();
   const { data: session, isPending } = useSession();
-  const filteredNavItems = navItems.filter(item => 
-    session && item.requiresAuth
-  );
+  const pathname = usePathname();
+  const router = useRouter();
   if (isPending) {
     return null;
   }
-
+  const handleLogout = async () => {
+    localStorage.removeItem('call-store-storage');
+    sessionStorage.removeItem('meeting-session-cache');
+    await removeLinkedInToken();
+    await signOut();
+    router.replace('/login');
+  };
+  const filteredNavItems = navItems.filter(item => 
+    session && item.requiresAuth
+  );
   return (
     <aside
       className={cn(
         'fixed left-0 top-0 h-screen  z-50 transition-all duration-300 ease-in-out flex flex-col glass-card-sidebar',
-        isCollapsed ? 'w-20  ' : 'w-64 '
+        isCollapsed ? 'w-20  ' : 'w-50'
       )}
     >
      
@@ -67,7 +76,18 @@ export function Sidebar({ isCollapsed, onToggleCollapse }: { isCollapsed: boolea
             );
           })}
         </ul>
-        
+        <hr className="my-4" />
+        <button 
+          className={cn(
+            'flex items-center p-2 rounded-lg transition-colors cursor-pointer',
+            'hover:bg-gray-100 dark:hover:bg-gray-800 w-full',
+            isCollapsed ? 'justify-center w-full' : 'justify-start'
+          )}
+          onClick={handleLogout}
+        >
+          <LogOut className="h-5 w-5 text-red-500" />
+          {!isCollapsed && <span className="ml-3 text-red-500">Logout</span>}
+        </button>
       </nav>
     </aside>
   );

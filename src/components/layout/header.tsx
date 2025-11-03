@@ -14,10 +14,9 @@ export function Header() {
   const router = useRouter();
   const { data: session, isPending } = useSession();
   const navLinks = [
-    { name: 'Features', href: '#features' },
-    { name: 'Pricing', href: '#pricing' },
-    { name: 'About', href: '#about' },
-    { name: 'Contact', href: '#contact' },
+    { name: 'Features', href: '/#features' },
+    { name: 'About', href: '/#about' },
+    { name: 'Contact', href: '/#contact' },
   ];
   if(session && !isPending){
     return <Skeleton className="h-screen"/>

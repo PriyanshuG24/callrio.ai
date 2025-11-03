@@ -1,16 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { addLinkedInToken } from "@/actions/linkedinPostAction/auth";
 
-// const ALGO = "aes-256-cbc";
-// const KEY = Buffer.from(process.env.ENCRYPTION_KEY!, "hex");
-
-// function encryptToken(token: string): string {
-//   const iv = crypto.randomBytes(16);
-//   const cipher = crypto.createCipheriv(ALGO, KEY, iv);
-//   const encrypted = Buffer.concat([cipher.update(token, "utf8"), cipher.final()]);
-//   return iv.toString("hex") + ":" + encrypted.toString("hex");
-// }
-
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
   const state = req.nextUrl.searchParams.get("state");
@@ -28,7 +18,7 @@ export async function GET(req: NextRequest) {
       code,
       client_id: process.env.NEXT_PUBLIC_LINKEDIN_CLIENT_ID!,
       client_secret: process.env.LINKEDIN_CLIENT_SECRET!,
-      redirect_uri: "http://localhost:3000/api/linkedin/callback",
+      redirect_uri: `${process.env.NEXT_PUBLIC_BASE_URL}/api/linkedin/callback`,
     }),
   });
 
@@ -54,5 +44,5 @@ export async function GET(req: NextRequest) {
 
 
   // Step 5: Redirect user back to dashboard
-  return NextResponse.redirect("http://localhost:3000/dashboard");
+  return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/dashboard`);
 }

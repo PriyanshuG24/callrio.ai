@@ -1,25 +1,27 @@
 # Calrio
 
-Calrio is a modern B2B SaaS platform designed to transform meetings into actionable content.  
-With support for role-based meetings (Admin, Guest, Producer), Calrio enables secure collaboration,  
-automatic recording, AI-driven transcription, highlight clip generation, and one-click publishing  
-to major platforms such as YouTube, LinkedIn, and Spotify.
+Calrio is a comprehensive meeting and content automation platform that simplifies your professional workflow. The platform enables seamless video conferencing with built-in meeting management, allowing you to schedule, join, and track meetings effortlessly. Key features include automated meeting summaries, collaborative note-taking, and one-click sharing of insights directly to LinkedIn. With real-time collaboration tools and responsive design, Calrio ensures smooth operation across all devices. The platform integrates with popular services through its modern tech stack, including Next.js, Supabase, and Stream SDK, providing a robust foundation for all your meeting and content sharing needs.
 
 ### Core Features
-- 🎥 **Meetings** – Host secure online meetings with admin & producer controls.
-- 📼 **Recording** – Store and manage meeting recordings in the cloud.
-- 🤖 **AI Transcription** – Auto-generate transcripts with Whisper/AI(Coming Soon).
-- ✂️ **Smart Clips** – Create highlight clips using AI & ffmpeg(Coming Soon).
+
+- 🎥 **Meetings** – Host and manage online meetings with ease
+- 🤖 **Meeting transcription** – Transcribe your meetings automatically
+- 📅 **Meeting Management** – Schedule, join, and track your meetings
+- 📝 **Meeting Notes** – Keep track of important discussion points
+- 🚀 **Automated Sharing** – Share meeting summaries on LinkedIn with one click
+- 📱 **Responsive Design** – Works on desktop and mobile devices
 - 🚀 **Publishing** – Push recordings & clips directly to external platforms(Coming Soon).
-- 🔐 **Role Management** – Admin, Producer, Guest access control.
+- ✂️ **Smart Clips** – Create highlight clips using AI & ffmpeg(Coming Soon).
 
 ### Tech Stack
+
 - **Frontend:** Next.js 14, TailwindCSS, shadcn/ui
-- **Backend:** Next.js API Routes / Node.js, PostgreSQL (Prisma/Drizzle)
-- **Video SDK:** Daily.co / LiveKit / 100ms
-- **Storage:** AWS S3 / Supabase Storage
-- **AI Services:** Whisper API, OpenAI, ffmpeg
-- **Deployment:** Vercel (frontend), Railway/Supabase (backend + DB)
+- **Backend:** Next.js API Routes, Supabase with Drizzle ORM
+- **Authentication:** NextAuth.js
+- **Video SDK:** Stream SDK for real-time video conferencing
+- **Storage:** Supabase Storage
+- **Social Integration:** LinkedIn API
+- **Deployment:** Vercel
 
 ---
 

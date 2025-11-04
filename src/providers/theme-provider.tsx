@@ -1,9 +1,9 @@
 // src/providers/theme-provider.tsx
-'use client';
+"use client";
 
-import { ThemeProvider as NextThemesProvider } from 'next-themes';
-import { type ThemeProviderProps } from 'next-themes';
-import { useEffect, useState } from 'react';
+import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { type ThemeProviderProps } from "next-themes";
+import { useEffect, useState } from "react";
 
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   const [mounted, setMounted] = useState(false);
@@ -17,9 +17,9 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   }
 
   return (
-    <NextThemesProvider 
-      attribute="class" 
-      defaultTheme="dark"
+    <NextThemesProvider
+      attribute="class"
+      defaultTheme="light"
       enableSystem={false}
       storageKey="callrio-theme"
       disableTransitionOnChange

@@ -1,59 +1,66 @@
 // src/app/dashboard/join/page.tsx
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { ArrowRight, Video, Copy, AlertCircle, Calendar } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { toast } from 'sonner';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { ArrowRight, Video, Copy, AlertCircle, Calendar } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { useTheme } from "next-themes";
 
 export default function JoinPage() {
-  const [meetingLink, setMeetingLink] = useState('');
+  const [meetingLink, setMeetingLink] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const router = useRouter();
+  const { theme } = useTheme();
 
   const handlePaste = async () => {
     try {
       const text = await navigator.clipboard.readText();
       setMeetingLink(text);
-      setError('');
+      setError("");
     } catch (err) {
-      console.error('Failed to read clipboard:', err);
-      toast('Could not access clipboard. Please paste manually.');
+      console.error("Failed to read clipboard:", err);
+      toast("Could not access clipboard. Please paste manually.");
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     if (!meetingLink) {
-      setError('Please enter a meeting link');
+      setError("Please enter a meeting link");
       return;
     }
     let meetingId = meetingLink;
     try {
       const url = new URL(meetingLink);
-      meetingId = url.pathname.split('/').pop() || meetingLink;
-      
-    } catch (e) {
-
-    }
+      meetingId = url.pathname.split("/").pop() || meetingLink;
+    } catch (e) {}
 
     setIsLoading(true);
-    
+
     setTimeout(() => {
       router.replace(`/dashboard/meeting/${meetingId}`);
     }, 500);
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-2xl">
-      <Card className="border-0 shadow-lg">
+    <div
+      className={`p-4 min-h-screen ${theme === "light" ? "bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50" : ""}`}
+    >
+      <Card className="glass-card py-8 px-4">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">Join a Meeting</CardTitle>
           <CardDescription>
@@ -66,25 +73,25 @@ export default function JoinPage() {
               <Label htmlFor="meeting-link">Meeting Link or ID</Label>
               <div className="relative w-full">
                 <div className="flex items-center gap-2">
-                    <Input
+                  <Input
                     id="meeting-link"
                     placeholder="Paste meeting link or ID"
                     className="w-full pr-20"
                     value={meetingLink}
                     onChange={(e) => setMeetingLink(e.target.value)}
-                    />
-                    <Button
+                  />
+                  <Button
                     type="button"
                     variant="outline"
                     size="sm"
                     className="absolute right-0 top-1/2 transform -translate-y-1/2 h-9 text-xs"
                     onClick={handlePaste}
-                    >
+                  >
                     <Copy className="h-3.5 w-3.5 mr-1" />
                     Paste
-                    </Button>
+                  </Button>
                 </div>
-                </div>
+              </div>
               {error && (
                 <p className="text-sm text-red-500 flex items-center mt-1">
                   <AlertCircle className="h-4 w-4 mr-1" />
@@ -100,7 +107,7 @@ export default function JoinPage() {
                 disabled={isLoading || !meetingLink}
               >
                 {isLoading ? (
-                  'Joining...'
+                  "Joining..."
                 ) : (
                   <>
                     Join Now

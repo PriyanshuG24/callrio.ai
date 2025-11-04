@@ -15,7 +15,7 @@ export const getChatClient = async ({
 }) => {
   if (chatClientInstance) return chatClientInstance;
 
-  const token =await generateClientToken(id); // runs server-side
+  const token =await generateClientToken(id);
 
   const client = StreamChat.getInstance(process.env.NEXT_PUBLIC_STREAM_API_KEY!,);
   if(!client || !token){

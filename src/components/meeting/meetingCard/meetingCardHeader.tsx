@@ -5,7 +5,10 @@ interface MeetingCardHeaderProps {
   type: "upcoming" | "ended" | "recordings";
 }
 
-export const MeetingCardHeader = ({ meeting, type }: MeetingCardHeaderProps) => {
+export const MeetingCardHeader = ({
+  meeting,
+  type,
+}: MeetingCardHeaderProps) => {
   const title = meeting.title || "Recording";
   return (
     <div className="p-4">

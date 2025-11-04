@@ -1,5 +1,4 @@
 import { Calendar, Clock } from "lucide-react";
-import { Call, CallRecording } from "@stream-io/video-react-sdk";
 import { formatDate, formatTime, getMeetingDuration } from "@/lib/utils";
 
 interface MeetingCardDetailsProps {
@@ -7,7 +6,10 @@ interface MeetingCardDetailsProps {
   type: "upcoming" | "ended" | "recordings";
 }
 
-export const MeetingCardDetails = ({ meeting, type }: MeetingCardDetailsProps) => {
+export const MeetingCardDetails = ({
+  meeting,
+  type,
+}: MeetingCardDetailsProps) => {
   if (type === "ended") {
     return (
       <div className="px-4 pb-4 space-y-2">
@@ -34,7 +36,9 @@ export const MeetingCardDetails = ({ meeting, type }: MeetingCardDetailsProps) =
   if (type === "upcoming") {
     return (
       <div className="px-4 pb-4 space-y-2">
-        <p className="text-sm text-muted-foreground">This meeting will start after the this time</p>
+        <p className="text-sm text-muted-foreground">
+          This meeting will start after the this time
+        </p>
         <div className="flex items-center text-sm text-muted-foreground">
           <Calendar className="h-4 w-4 mr-2" />
           <span>{formatDate(meeting.startAt)}</span>
@@ -46,7 +50,7 @@ export const MeetingCardDetails = ({ meeting, type }: MeetingCardDetailsProps) =
       </div>
     );
   }
-  if (type === "recordings") {  
+  if (type === "recordings") {
     return (
       <div className="px-4 pb-4 space-y-2">
         <div className="flex items-center text-sm text-muted-foreground">
@@ -55,7 +59,9 @@ export const MeetingCardDetails = ({ meeting, type }: MeetingCardDetailsProps) =
         </div>
         <div className="flex items-center text-sm text-muted-foreground">
           <Clock className="h-4 w-4 mr-2" />
-          <span>Duration: {getMeetingDuration(meeting.start_time, meeting.end_time)}</span>
+          <span>
+            Duration: {getMeetingDuration(meeting.start_time, meeting.end_time)}
+          </span>
         </div>
       </div>
     );

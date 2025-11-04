@@ -45,9 +45,9 @@ export const useCallStore = create<CallStore>()(
         set((state) => ({
           upcomingCalls: [...state.upcomingCalls, call],
         })),
-      addEndedCall: (call:any) =>
+      addEndedCall: (call: any) =>
         set((state) => ({
-          endedCalls: [...state.endedCalls, call],
+          endedCalls: [...state.endedCalls, call].sort((a, b) => new Date(b.ended_at).getTime() - new Date(a.ended_at).getTime()),
           upcomingCalls: state.upcomingCalls.filter((c) => c.meetingId !== call.meetingId)
         })),
       refreshCallRecordings: (recordings:any[]) => {

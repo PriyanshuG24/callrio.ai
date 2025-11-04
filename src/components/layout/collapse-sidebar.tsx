@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -21,8 +21,10 @@ import {
   User,
 } from "lucide-react";
 import { LogoutButton } from "../auth/logout";
+import { useTheme } from "next-themes";
 
 export function CollapsibleSidebar() {
+  const { theme } = useTheme();
   const navItems = [
     { name: "New Meeting", href: "/dashboard/create-meeting", icon: Plus },
     { name: "Previous", href: "/dashboard/previous", icon: Clock },
@@ -33,7 +35,7 @@ export function CollapsibleSidebar() {
   ];
 
   return (
-    <div className="sm:hidden">
+    <div className="sm:hidden ">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className="flex items-center gap-2">
@@ -42,7 +44,10 @@ export function CollapsibleSidebar() {
           </Button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent className="w-36" align="start">
+        <DropdownMenuContent
+          className={`w-36 ${theme === "light" ? "bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50" : ""}`}
+          align="start"
+        >
           <DropdownMenuLabel>Navigation</DropdownMenuLabel>
           <DropdownMenuSeparator />
 
@@ -66,7 +71,7 @@ export function CollapsibleSidebar() {
           <DropdownMenuSeparator />
 
           <DropdownMenuItem className="text-red-500 hover:text-red-600 cursor-pointer">
-            <LogoutButton/>
+            <LogoutButton />
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -1,25 +1,25 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Menu, X } from 'lucide-react';
-import { useState} from 'react';
-import { useSession } from '@/lib/auth-client';
-import { ThemeToggle } from '../theme/theme-toggle';
-import Image from 'next/image';
-import {Skeleton} from '@/components/ui/skeleton';
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Menu, X } from "lucide-react";
+import { useState } from "react";
+import { useSession } from "@/lib/auth-client";
+import { ThemeToggle } from "../theme/theme-toggle";
+import Image from "next/image";
+import { Skeleton } from "@/components/ui/skeleton";
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
   const { data: session, isPending } = useSession();
   const navLinks = [
-    { name: 'Features', href: '/#features' },
-    { name: 'About', href: '/#about' },
-    { name: 'Contact', href: '/#contact' },
+    { name: "Features", href: "/#features" },
+    { name: "About", href: "/#about" },
+    { name: "Contact", href: "/#contact" },
   ];
-  if(session && !isPending){
-    return <Skeleton className="h-screen"/>
+  if (session && !isPending) {
+    return <Skeleton className="h-screen" />;
   }
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
@@ -57,15 +57,18 @@ export function Header() {
             <ThemeToggle />
 
             {session ? (
-              <Button onClick={() => router.replace('/dashboard')}>
+              <Button onClick={() => router.replace("/dashboard")}>
                 Go to Dashboard
               </Button>
             ) : (
               <div className="hidden md:flex space-x-2">
-                <Button variant="outline" onClick={() => router.replace('/login')}>
+                <Button
+                  variant="outline"
+                  onClick={() => router.replace("/login")}
+                >
                   Sign In
                 </Button>
-                <Button onClick={() => router.replace('/register')}>
+                <Button onClick={() => router.replace("/register")}>
                   Get Started
                 </Button>
               </div>
@@ -100,20 +103,20 @@ export function Header() {
             {!session && (
               <div className="pt-4 pb-3 border-t border-gray-200 dark:border-gray-700">
                 <div className="space-y-1">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="w-full"
                     onClick={() => {
-                      router.replace('/login');
+                      router.replace("/login");
                       setMobileMenuOpen(false);
                     }}
                   >
                     Sign In
                   </Button>
-                  <Button 
+                  <Button
                     className="w-full mt-2"
                     onClick={() => {
-                      router.replace('/register');
+                      router.replace("/register");
                       setMobileMenuOpen(false);
                     }}
                   >

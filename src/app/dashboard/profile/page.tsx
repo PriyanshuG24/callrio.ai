@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -12,52 +12,61 @@ import { removeLinkedInToken } from "@/actions/linkedinPostAction/auth";
 import { signOut } from "@/lib/auth-client";
 import { useState } from "react";
 import Loader from "@/components/ui/loader";
-
+import { useTheme } from "next-themes";
 export default function ProfilePage() {
   const { data: session, isPending } = useSession();
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-
+  const { theme } = useTheme();
   const handleLogout = async () => {
     try {
-      setIsLoggingOut(true); 
-      localStorage.removeItem('call-store-storage');
-      sessionStorage.removeItem('meeting-session-cache');
+      setIsLoggingOut(true);
+      localStorage.removeItem("call-store-storage");
+      sessionStorage.removeItem("meeting-session-cache");
       await removeLinkedInToken();
       await signOut();
-      router.replace('/login');
+      router.replace("/login");
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
       setIsLoggingOut(false);
     }
   };
   if (isPending || isLoggingOut || !session) {
-    return <Loader/>; 
+    return <Loader />;
   }
 
-  const initials = session?.user?.name
-    ?.split(' ')
-    .map(name => name[0])
-    .join('')
-    .toUpperCase() || 'U';
+  const initials =
+    session?.user?.name
+      ?.split(" ")
+      .map((name) => name[0])
+      .join("")
+      .toUpperCase() || "U";
 
   return (
-    <main className="h-full glass-card px-4 py-12 px-6 md:px-8 md:py-16 sm:py-8 sm:px-4">
+    <main
+      className={`min-h-screen px-4 py-12 px-6 md:px-8 md:py-16 sm:py-8 sm:px-4 ${theme === "light" ? "bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50" : ""}`}
+    >
       <div className="max-w-4xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 px-4">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">Your Profile</h1>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+              Your Profile
+            </h1>
           </div>
           <div className="flex items-center justify-between gap-2">
             <div>
-              <Button variant="outline" className="cursor-pointer flex items-center gap-2 hover:bg-gray-500 dark:hover:bg-gray-800" onClick={()=>router.push('/dashboard')}>
+              <Button
+                variant="outline"
+                className="cursor-pointer flex items-center gap-2 hover:bg-gray-200 dark:hover:bg-gray-800"
+                onClick={() => router.push("/dashboard")}
+              >
                 <LayoutDashboardIcon className="h-4 w-4" />
-               Dashboard
+                Dashboard
               </Button>
             </div>
             <div>
-          <LinkedInPost/>
-          </div>
+              <LinkedInPost />
+            </div>
           </div>
         </div>
 
@@ -66,7 +75,10 @@ export default function ProfilePage() {
             <div className="h-24 relative animated-gradient">
               <div className="absolute -bottom-12 left-6">
                 <Avatar className="h-24 w-24 border-4 border-white dark:border-gray-900">
-                  <AvatarImage src={session?.user?.image || ''} alt={session?.user?.name || 'User'} />
+                  <AvatarImage
+                    src={session?.user?.image || ""}
+                    alt={session?.user?.name || "User"}
+                  />
                   <AvatarFallback className="text-2xl font-semibold text-white animated-gradient-avatar">
                     {initials}
                   </AvatarFallback>
@@ -76,20 +88,34 @@ export default function ProfilePage() {
             <div className="pt-16 px-6 pb-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{session?.user?.name}</h2>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {session?.user?.name}
+                  </h2>
                   <div className="flex items-center text-muted-foreground mt-1">
                     <Mail className="h-4 w-4 mr-2" />
                     <span>{session?.user?.email}</span>
                   </div>
                   <div className="flex items-center text-muted-foreground mt-1">
                     <Calendar className="h-4 w-4 mr-2" />
-                    <span>Member since {new Date(session?.user?.createdAt || new Date()).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}</span>
+                    <span>
+                      Member since{" "}
+                      {new Date(
+                        session?.user?.createdAt || new Date()
+                      ).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                      })}
+                    </span>
                   </div>
                 </div>
-                <div >
-                  <Button variant="outline" className="cursor-pointer flex items-center gap-2 hover:bg-gray-500 dark:hover:bg-gray-800 hover:text-red-500" onClick={handleLogout}>
+                <div>
+                  <Button
+                    variant="outline"
+                    className="cursor-pointer flex items-center gap-2 hover:bg-gray-200 dark:hover:bg-gray-800 hover:text-red-500"
+                    onClick={handleLogout}
+                  >
                     <LogOut className="h-4 w-4" />
-                   Logout
+                    Logout
                   </Button>
                 </div>
               </div>

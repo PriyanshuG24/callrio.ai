@@ -67,7 +67,7 @@ export const useMeetingState = () => {
           meetingId: id,
           title: meetingName || 'Meeting',
           ownerId: user.user.id,
-          setDate: setDate.toISOString(),
+          setDate: new Date(setDate.toISOString()),
         })
         if(success && data){
           addUpcomingCall({

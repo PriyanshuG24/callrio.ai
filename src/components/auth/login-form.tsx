@@ -1,22 +1,29 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Icons } from '../icons';
-import { signIn } from '@/lib/auth-client';
-import { toast } from 'sonner';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Icons } from "../icons";
+import { signIn } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 const loginSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(1, 'Password is required'),
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(1, "Password is required"),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -29,8 +36,8 @@ export default function LoginForm() {
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
   });
 
@@ -47,11 +54,15 @@ export default function LoginForm() {
         toast.error(error.message);
         return;
       }
-      toast.success('Login successful!');
-      router.replace('/dashboard');
+      toast.success("Login successful!");
+      router.replace("/dashboard");
     } catch (error) {
-      console.error('Login failed:', error);
-      toast.error(error instanceof Error ? error.message : 'An error occurred during login');
+      console.error("Login failed:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "An error occurred during login"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -61,16 +72,15 @@ export default function LoginForm() {
     try {
       setIsGoogleLoading(true);
       const { error } = await signIn.social({
-        provider: 'google',
-        callbackURL: '/dashboard', 
+        provider: "google",
+        callbackURL: "/dashboard",
       });
       if (error) throw error;
-      toast.success('Redirecting...');
-      router.replace('/dashboard');
-  
+      toast.success("Redirecting...");
+      router.replace("/dashboard");
     } catch (error) {
-      console.error('Google sign in failed:', error);
-      toast.error('Failed to sign in with Google');
+      console.error("Google sign in failed:", error);
+      toast.error("Failed to sign in with Google");
     } finally {
       setIsGoogleLoading(false);
     }
@@ -84,8 +94,11 @@ export default function LoginForm() {
             Sign in to your account
           </h2>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            Don&apos;t have an account?{' '}
-            <Link href="/register" className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/register"
+              className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+            >
               Register
             </Link>
           </p>
@@ -133,7 +146,9 @@ export default function LoginForm() {
             />
 
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
+              {isLoading && (
+                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Sign In
             </Button>
           </form>

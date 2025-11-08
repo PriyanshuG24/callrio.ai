@@ -25,9 +25,14 @@ import { useSession } from "@/lib/auth-client";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { RefreshButton } from "@/components/theme/refresh-button";
 import { useCallStore } from "@/store/callStore";
-import { getMeetingDuration, formatTime, formatDate } from "@/lib/utils";
+import {
+  getMeetingDuration,
+  formatTime,
+  formatDate,
+  getTotalMeetingDuration,
+} from "@/lib/utils";
 import { CollapsibleSidebar } from "@/components/layout/collapse-sidebar";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getAllMeeting, startMeeting } from "@/actions/dbAction/meeting";
 import { getMeetingRecordings } from "@/actions/dbAction/recording";
 import { useStreamVideoClient } from "@stream-io/video-react-sdk";
@@ -45,7 +50,9 @@ export default function DashboardPage() {
     setLoading,
     refreshCalls,
     refreshCallRecordings,
+    endedCalls,
   } = useCallStore();
+  const [totalMeetingTime, setTotalMeetingTime] = useState("0");
   const upcomingMeetings = upcomingCalls.slice(0, 2).map((call) => ({
     id: call.meetingId,
     title: call.title,
@@ -86,6 +93,10 @@ export default function DashboardPage() {
   const userId = session?.user.id;
   const { theme } = useTheme();
   useEffect(() => {
+    const totalMeetingTime = getTotalMeetingDuration(endedCalls);
+    setTotalMeetingTime(totalMeetingTime);
+  }, [endedCalls]);
+  useEffect(() => {
     const isFetchedOrNot = localStorage.getItem("call-store-storage");
     if (isFetchedOrNot) {
       return;
@@ -110,7 +121,6 @@ export default function DashboardPage() {
   }, []);
 
   const handleStartMeeting = async ({ meetingId }: { meetingId: string }) => {
-    console.log(meetingId);
     if (meetingId) {
       const meetingData = await getMeetingById(meetingId);
       if (!meetingData) {
@@ -141,6 +151,7 @@ export default function DashboardPage() {
         className={`mx-auto px-4 py-8 min-h-screen ${theme === "light" ? "bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50" : "bg-[#1c1f2e]/80 backdrop-blur-md"}`}
       >
         {/* Header */}
+
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
             <h1 className="text-3xl font-bold">
@@ -226,63 +237,55 @@ export default function DashboardPage() {
           <TabsContent value="overview" className="space-y-4">
             {/* Top Stats Cards */}
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between ">
-              <Card className="w-full md:w-[48%] lg:w-[23.5%] glass-card">
+              <Card className="w-full md:w-[48%] lg:w-[23.5%] md:h-[50%] lg:h-[30%] glass-card">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    Total Meetings
+                    Total Ended Meetings
                   </CardTitle>
                   <Video className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">24</div>
-                  <p className="text-xs text-muted-foreground">
-                    +12% from last month
-                  </p>
+                  <div className="text-2xl font-bold">{endedCalls.length}</div>
                 </CardContent>
               </Card>
 
               <Card className="w-full md:w-[48%] lg:w-[23.5%] glass-card">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    Team Members
+                    Total Scheduled Meetings
                   </CardTitle>
                   <Users className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">8</div>
-                  <p className="text-xs text-muted-foreground">
-                    +2 from last month
-                  </p>
+                  <div className="text-2xl font-bold">
+                    {upcomingCalls.length}
+                  </div>
                 </CardContent>
               </Card>
 
               <Card className="w-full md:w-[48%] lg:w-[23.5%] glass-card">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    Total Recordings
+                    Total Recorded Meetings
                   </CardTitle>
                   <FileText className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">156</div>
-                  <p className="text-xs text-muted-foreground">
-                    +23 from last month
-                  </p>
+                  <div className="text-2xl font-bold">
+                    {callRecordings.length}
+                  </div>
                 </CardContent>
               </Card>
 
               <Card className="w-full md:w-[48%] lg:w-[23.5%] glass-card">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">
-                    Meeting Hours
+                    Total Meeting Hours
                   </CardTitle>
                   <Clock className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">42.5h</div>
-                  <p className="text-xs text-muted-foreground">
-                    +5.2h from last month
-                  </p>
+                  <div className="text-2xl font-bold">{totalMeetingTime}</div>
                 </CardContent>
               </Card>
             </div>
@@ -291,7 +294,9 @@ export default function DashboardPage() {
               <Card className="w-full glass-card">
                 <CardHeader>
                   <div>
-                    <CardTitle className="text-lg">Upcoming Meetings</CardTitle>
+                    <CardTitle className="text-lg">
+                      Recent Upcoming Meetings
+                    </CardTitle>
                     <CardDescription>
                       Your scheduled meetings for the next few days
                     </CardDescription>

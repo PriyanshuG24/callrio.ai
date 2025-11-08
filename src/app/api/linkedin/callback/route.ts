@@ -41,7 +41,5 @@ export async function GET(req: NextRequest) {
     expiresIn: (Date.now()+tokenData.expires_in*1000).toString(),
   });
 
-
-  // Step 5: Redirect user back to dashboard
   return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/dashboard`);
 }

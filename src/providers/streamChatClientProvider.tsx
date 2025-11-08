@@ -20,7 +20,9 @@ export const StreamChatProvider = ({
         const client = await getChatClient({
           id: session.user.id,
           name: session.user.name,
-          image: session.user.image || undefined,
+          image:
+            session.user.image ||
+            `https://getstream.io/random_png/?name=${session.user.name}`,
         });
         setChatClient(client);
       } catch (err) {

@@ -63,6 +63,37 @@ export const getMeetingDuration = (start?: string | Date, end?: string | Date) =
   return "N/A";
 }
 };
+export const getTotalMeetingDuration = (calls?: any[]) => {
+  if (!calls) return "N/A";
+  const convertToSeconds = (time: string) => {
+    const [hms, period] = time.split(" ");
+    let [h, m, s] = hms.split(":").map(Number);
+    
+    if (period === "PM" && h !== 12) h += 12;
+    if (period === "AM" && h === 12) h = 0;
+
+    return h * 3600 + m * 60 + s;
+  };
+  try {
+    let totalDuration = 0;
+    for (const call of calls) {
+      const startSec = convertToSeconds(formatTime(call.startAt));
+      const endSec = convertToSeconds(formatTime(call.endedAt));
+      let diffSec = Math.abs(endSec - startSec);
+      totalDuration += diffSec;
+    }
+    if (totalDuration < 60) {
+      return `${totalDuration.toFixed(0)} sec`;
+    } else if (totalDuration < 3600) {
+      return `${(totalDuration / 60).toFixed(2)} min`;
+    } else {
+      return `${(totalDuration / 3600).toFixed(2)} hr`;
+    }
+  } catch (error) {
+    return "N/A";
+  }
+
+};
 
 export const formateTranscription = (transcription: any[]) => {
   if (!Array.isArray(transcription) || transcription.length === 0) {
@@ -123,7 +154,6 @@ export const generateSummary = async (transcription:any) => {
     `;
   const model = new GoogleGenerativeAI(`${process.env.NEXT_PUBLIC_GOOGLE_GENERATIVE_AI_API_KEY}`).getGenerativeModel({ model: "gemini-2.0-flash-exp" });
   const content = await model.generateContent(prompt);
-  console.log(JSON.stringify(content.response.text()));
   const rawText = content.response.text().trim();
   const cleanText = rawText.replace(/```json|```/g, "").trim();
   const parsedData = JSON.parse(cleanText);

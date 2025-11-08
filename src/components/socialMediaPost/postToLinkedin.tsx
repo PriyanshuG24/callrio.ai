@@ -203,7 +203,6 @@ export const PostToLinkedin = ({
               </>
             )}
             <div className="flex gap-2 mt-2">
-              {/* Generate message (all post types) */}
               {postType === "thanks" && (
                 <Button
                   variant="secondary"
@@ -218,7 +217,6 @@ export const PostToLinkedin = ({
                 </Button>
               )}
 
-              {/* Show this only when outcomes section selected */}
               {postType === "outcomes" && (
                 <Button
                   variant="secondary"
@@ -229,7 +227,6 @@ export const PostToLinkedin = ({
                       meetingLink
                     );
                     setContent(generated);
-                    console.log(generated);
                     toast.success("Key points generated ✅");
                     setCommand("");
                   }}

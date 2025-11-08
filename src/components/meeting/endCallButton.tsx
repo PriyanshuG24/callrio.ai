@@ -1,13 +1,11 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useCall } from "@stream-io/video-react-sdk";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 
-export const EndCallButton = () => {
+export const EndCallButton = ({ setIsEndingMeeting }: any) => {
   const call = useCall();
-  const router = useRouter();
 
   const endCallForEveryone = async () => {
     try {
@@ -17,12 +15,15 @@ export const EndCallButton = () => {
         call.camera?.disable(),
         call.microphone?.disable(),
       ]);
+
+      setIsEndingMeeting(true);
+
       await call.endCall();
-      toast.success("Call ended for all participants");
+      toast.success("Meeting ended — processing data...");
     } catch (error) {
       console.error("Failed to end the call", error);
       toast.error("Failed to end the meeting. Please try again.");
-      router.replace("/dashboard");
+      setIsEndingMeeting(false);
     }
   };
 

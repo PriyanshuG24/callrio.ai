@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { useSession } from "@/lib/auth-client";
 import { StreamCall, StreamTheme } from "@stream-io/video-react-sdk";
 import { useState, useEffect } from "react";
-import MeetingRoom from "@/components/meeting/meetingRoom";
+import { MeetingRoom } from "@/components/meeting/meetingRoom";
 import MeetingSetup from "@/components/meeting/meetingSetup";
 import { useGetCallById } from "@/hooks/useGetCallById";
 import { Loader2 } from "lucide-react";
@@ -16,17 +16,14 @@ export default function MeetingPage() {
   const [isSetupComplete, setIsSetupComplete] = useState(false);
   const { call, isCallLoading, fetchCallById } = useGetCallById();
   const [isCallAlreadyEnded, setIsCallAlreadyEnded] = useState(false);
-  console.log("id", id);
   useEffect(() => {
     if (!id) {
-      console.log("id not found");
       return;
     }
     fetchCallById(id);
   }, [id]);
   useEffect(() => {
     if (!call) {
-      console.log("call not found");
       return;
     }
     if (call?.state?.endedAt) {
@@ -59,7 +56,6 @@ export default function MeetingPage() {
       </div>
     );
   }
-  console.log("call", call);
   return (
     <>
       {call && (

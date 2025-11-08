@@ -49,6 +49,16 @@ const callList = ({ type }: CallListProps) => {
       <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
         <div className="text-4xl mb-2">📅</div>
         <p className="text-lg">{noCallsMessage}</p>
+        <div className="flex justify-end mb-5">
+          <Button
+            variant="outline"
+            className="flex items-center gap-2 mt-4"
+            onClick={() => router.push("/dashboard")}
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Go to Dashboard
+          </Button>
+        </div>
       </div>
     );
   }

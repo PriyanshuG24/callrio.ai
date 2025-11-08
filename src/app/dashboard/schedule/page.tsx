@@ -21,7 +21,6 @@ export default function SchedulePage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const handleCreateMeeting = async () => {
-    console.log(values.dateTime);
     try {
       setIsLoading(true);
       const newMeeting = await createMeeting(

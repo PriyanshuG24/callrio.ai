@@ -98,7 +98,7 @@ export default function PreviousMeetingPageDetails() {
       className={`min-h-screen ${theme === "light" ? "bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50" : ""} p-4 md:p-8`}
     >
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* i want this button at right end  */}
+        {/* Back Button */}
         <div className="flex justify-end">
           <Button
             variant="outline"
@@ -230,24 +230,22 @@ export default function PreviousMeetingPageDetails() {
                     className="group flex items-start gap-3 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-all duration-200"
                   >
                     <div className="flex-shrink-0">
-                      <Avatar
-                        className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium"
-                        name={msg.user?.name?.[0]?.toUpperCase() || "U"}
-                        image={msg.user?.image}
+                      <img
+                        className="h-10 w-10 rounded-full"
+                        src={msg.user?.image}
+                        alt={msg.user?.name}
                       />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between flex-wrap gap-2">
-                        <span className="font-medium text-white truncate">
+                        <span className="font-medium truncate">
                           {msg.user?.name || "Anonymous"}
                         </span>
-                        <span className="text-xs text-gray-400 whitespace-nowrap">
+                        <span className="text-xs whitespace-nowrap">
                           {new Date(msg.created_at).toLocaleTimeString()}
                         </span>
                       </div>
-                      <p className="text-gray-200 mt-1 break-words">
-                        {msg.text}
-                      </p>
+                      <p className="mt-1 break-words">{msg.text}</p>
 
                       {msg.reaction_counts &&
                         Object.keys(msg.reaction_counts).length > 0 && (

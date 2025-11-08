@@ -6,9 +6,6 @@ import { eq, and, desc } from "drizzle-orm";
 
 export const createMeetingCall = async ({meetingId,title, ownerId}: {meetingId: string;title: string; ownerId: string}) => {
   try {
-    console.log("Meeting Id",meetingId);
-    console.log("Meeting title",title);
-    console.log("Meeting owner Id",ownerId);
     const data=await db.insert(meeting).values({
       meetingId: meetingId,
       title: title || "Meeting",
@@ -33,10 +30,6 @@ export const createMeetingCall = async ({meetingId,title, ownerId}: {meetingId: 
 }
 export const createScheduleMeetingCall = async ({meetingId,title, ownerId,setDate}: {meetingId: string;title: string; ownerId: string; setDate: Date}) => {
   try {
-    console.log("Meeting Id",meetingId);
-    console.log("Meeting title",title);
-    console.log("Meeting owner Id",ownerId);
-    console.log("ISO Date",setDate);
     const data=await db.insert(meeting).values({
       meetingId: meetingId,
       title: title || "Meeting",

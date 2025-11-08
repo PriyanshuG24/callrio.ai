@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
   const userInfo = await userRes.json();
-  // Step 4: Store in Supabase
+  // Step 3: Store in Supabase
   await addLinkedInToken({
     linkedinUserId: userInfo.sub,
     accessToken: accessToken,
@@ -43,6 +43,6 @@ export async function GET(req: NextRequest) {
   });
 
 
-  // Step 5: Redirect user back to dashboard
+  // Step 4: Redirect user back to dashboard
   return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/dashboard`);
 }

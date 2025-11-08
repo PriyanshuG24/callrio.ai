@@ -9,7 +9,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Missing code" }, { status: 400 });
   }
 
-  // Step 1: Exchange code for access token
   const tokenRes = await fetch("https://www.linkedin.com/oauth/v2/accessToken", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -30,19 +29,17 @@ export async function GET(req: NextRequest) {
 
   const accessToken = tokenData.access_token;
 
-  // Step 2: Fetch LinkedIn user info
+
   const userRes = await fetch("https://api.linkedin.com/v2/userinfo", {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
   const userInfo = await userRes.json();
-  // Step 3: Store in Supabase
+
   await addLinkedInToken({
     linkedinUserId: userInfo.sub,
     accessToken: accessToken,
     expiresIn: (Date.now()+tokenData.expires_in*1000).toString(),
   });
 
-
-  // Step 4: Redirect user back to dashboard
   return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}/dashboard`);
 }

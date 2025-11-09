@@ -155,14 +155,14 @@ export default function Home() {
             >
               <Button
                 onClick={() => router.replace("/register")}
-                className="glass-button px-8 py-6 text-lg font-semibold text-black"
+                className="px-8 py-6 text-lg font-semibold"
               >
                 Get Started Free
               </Button>
               <Button
                 variant="outline"
                 onClick={() => router.replace("/login")}
-                className="px-8 py-6 text-lg font-semibold text-black"
+                className="px-8 py-6 text-lg font-semibold"
               >
                 Sign In
               </Button>
@@ -210,7 +210,7 @@ export default function Home() {
           <div className="flex justify-center items-center">
             <Button
               onClick={() => router.replace("/register")}
-              className="glass-button px-8 py-6 text-lg font-semibold text-black "
+              className="px-8 py-6 text-lg font-semibold"
             >
               Create Instant Meeting
             </Button>
@@ -310,10 +310,10 @@ export default function Home() {
                 )}
               </div>
 
-              <div className="flex justify-end">
-                <button type="submit" className="glass-button p-2">
+              <div className="flex justify-center">
+                <Button type="submit" className="p-2 text-lg font-semibold">
                   {isLoading ? "Sending..." : "Send Message"}
-                </button>
+                </Button>
               </div>
             </form>
           </div>

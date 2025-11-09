@@ -50,7 +50,7 @@ export const isLinkedInConnected = async () => {
     if(!success){
         return {
             success:false,
-            message:"ReLogin to LinkedIn Please !!!"
+            message:"ReLogin to LinkedIn Please . Go to your Profile."
         }
     }
     return {

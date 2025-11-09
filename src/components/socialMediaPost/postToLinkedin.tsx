@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
+import { useTheme } from "next-themes";
 import {
   thankyouGeneratedMessage,
   keyPointsGeneratedMessage,
@@ -29,7 +30,7 @@ import {
   shareMeetingOutcomesOnLinkedin,
   shareThankYouNoteOnLinkedin,
 } from "@/actions/linkedinPostAction/post";
-
+import { cn } from "@/lib/utils";
 export const PostToLinkedin = ({
   meetingLink,
   transcriptions,
@@ -43,6 +44,7 @@ export const PostToLinkedin = ({
     `🙏 A big thank you to everyone who joined our meeting today! It was a great discussion and I appreciate everyone's valuable input.\n\n#Hastage1 #Hastage2 #Hastage3 ...\n\n For more specific post message give input in input box`
   );
   const [command, setCommand] = useState("");
+  const { theme } = useTheme();
   const postTemplates = {
     thanks: {
       title: " Your Post Looks Like This",
@@ -113,7 +115,14 @@ export const PostToLinkedin = ({
           <span>Post to LinkedIn</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent
+        className={cn(
+          theme === "light"
+            ? "bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50"
+            : "bg-[#1c1f2e]/80 backdrop-blur-md",
+          "sm:max-w-2xl"
+        )}
+      >
         <DialogHeader>
           <DialogTitle>Share on LinkedIn</DialogTitle>
         </DialogHeader>
@@ -126,7 +135,7 @@ export const PostToLinkedin = ({
               onValueChange={handleTemplateSelect}
               className="grid grid-cols-3 gap-4"
             >
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 ">
                 <RadioGroupItem
                   value="thanks"
                   id="thanks"
@@ -134,7 +143,7 @@ export const PostToLinkedin = ({
                 />
                 <Label
                   htmlFor="thanks"
-                  className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer w-full"
+                  className={`flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer w-full ${theme === "light" ? "bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50" : "bg-[#1c1f2e]/80 backdrop-blur-md"}`}
                 >
                   <FiUsers className="mb-2 h-6 w-6" />
                   <span className="text-sm">Thank You</span>
@@ -148,7 +157,7 @@ export const PostToLinkedin = ({
                 />
                 <Label
                   htmlFor="outcomes"
-                  className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer w-full"
+                  className={`flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer w-full ${theme === "light" ? "bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50" : "bg-[#1c1f2e]/80 backdrop-blur-md"}`}
                 >
                   <FiCheckCircle className="mb-2 h-6 w-6" />
                   <span className="text-sm">Key Outcomes</span>
@@ -163,7 +172,7 @@ export const PostToLinkedin = ({
                   />
                   <Label
                     htmlFor="recording"
-                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer w-full"
+                    className={` flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer w-full ${theme === "light" ? "bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50" : "bg-[#1c1f2e]/80 backdrop-blur-md"}`}
                   >
                     <FiVideo className="mb-2 h-6 w-6" />
                     <span className="text-sm">Recording</span>

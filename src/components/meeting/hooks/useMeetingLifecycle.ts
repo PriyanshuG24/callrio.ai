@@ -30,6 +30,7 @@ export function useMeetingLifecycle(
   const [liveChatChannel, setLiveChatChannel] = useState<Channel | null>(null);
   const [isUpdateMeetingParticipantSessionHistory, setIsUpdateMeetingParticipantSessionHistory] = useState(false);
   const [isRecordingButtonClicked, setIsRecordingButtonClicked] = useState(false);
+  const [totalParticipantCount, setTotalParticipantCount] = useState(1);
   const { client } = useChatContext();
 
   useEffect(() => {
@@ -85,6 +86,7 @@ export function useMeetingLifecycle(
       await createMeetingParticipant(call.id, event.participant?.user?.id, event.participant?.user?.name || "Unknown", event.participant?.user?.role);
       await createMeetingParticipantSessionHistory(call.id, event.participant?.user?.id, event.participant?.user_session_id);
       activeParticipantMap.current.set(event.participant?.user?.id, event.participant?.user_session_id);
+      setTotalParticipantCount(activeParticipantMap.current.size);
     };
 
     const onLeft = async (event: any) => {
@@ -138,5 +140,5 @@ export function useMeetingLifecycle(
     };
   }, [call,localParticipant,session]);
 
-  return { recordingReady, transcriptionReady, isMeetingOwner, liveChatChannel, isMeetingEnded ,isUpdateMeetingParticipantSessionHistory,isRecordingButtonClicked};
+  return { recordingReady, transcriptionReady, isMeetingOwner, liveChatChannel, isMeetingEnded ,isUpdateMeetingParticipantSessionHistory,isRecordingButtonClicked,totalParticipantCount};
 }

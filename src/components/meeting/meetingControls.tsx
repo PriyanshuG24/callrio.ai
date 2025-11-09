@@ -26,11 +26,13 @@ export const MeetingControls = ({
   isOwner,
   router,
   setIsEndingMeeting,
+  showChat,
+  showParticipants,
 }: any) => (
   <div
     className={cn(
       "fixed bottom-4 left-1/2 -translate-x-1/2 z-50",
-      "flex items-center justify-center flex-wrap gap-3 p-4 rounded-xl",
+      "flex items-center justify-center flex-wrap gap-3 p-4 rounded-xl min-w-[370px] ",
       "border border-white/10 shadow-lg backdrop-blur-md transition-all duration-300",
       showControls
         ? "opacity-100 translate-y-0"
@@ -67,7 +69,7 @@ export const MeetingControls = ({
       onClick={onToggleParticipants}
       variant="default"
       size="icon"
-      className="rounded-full bg-[#19232d] hover:bg-[#4c535b] h-10 w-10"
+      className={`rounded-full bg-[#19232d] hover:bg-[#4c535b] h-10 w-10 ${showParticipants ? "bg-[#4c535b]" : ""}`}
     >
       <Users size={20} className="text-white" />
     </Button>
@@ -76,7 +78,7 @@ export const MeetingControls = ({
       onClick={onToggleChat}
       variant="default"
       size="icon"
-      className="rounded-full bg-[#19232d] hover:bg-[#4c535b] h-10 w-10"
+      className={`rounded-full bg-[#19232d] hover:bg-[#4c535b] h-10 w-10 ${showChat ? "bg-[#4c535b]" : ""}`}
     >
       <ChartBarIcon size={20} className="text-white" />
     </Button>

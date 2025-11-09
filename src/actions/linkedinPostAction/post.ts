@@ -25,7 +25,7 @@ export const postToLinkedin = async () => {
     if(!success){
         return {
             success:false,
-            message:"ReLogin to LinkedIn Please !!!"
+            message:"ReLogin to LinkedIn Please . Go to your Profile."
         }
     }
     const data=await db.select().from(linkedinToken).where(eq(linkedinToken.userId,session.user.id))
@@ -90,7 +90,7 @@ export const shareMeetingOnLinkedin = async ({description,meetingLink}:ShareMeet
     if(!success){
         return {
             success:false,
-            message:"ReLogin to LinkedIn Please !!!"
+            message:"ReLogin to LinkedIn Please . Go to your Profile."
         }
     }
     const data=await db.select().from(linkedinToken).where(eq(linkedinToken.userId,session.user.id))
@@ -168,7 +168,7 @@ export const shareThankYouNoteOnLinkedin = async (description:string)=> {
     if(!success){
         return {
             success:false,
-            message:"ReLogin to LinkedIn Please !!!"
+            message:"ReLogin to LinkedIn Please . Go to your Profile."
         }
     }
     const data=await db.select().from(linkedinToken).where(eq(linkedinToken.userId,session.user.id))
@@ -233,7 +233,7 @@ export const shareMeetingOutcomesOnLinkedin = async (description:string,recordin
     if(!success){
         return {
             success:false,
-            message:"ReLogin to LinkedIn Please !!!"
+            message:"ReLogin to LinkedIn Please . Go to your Profile."
         }
     }
     const data=await db.select().from(linkedinToken).where(eq(linkedinToken.userId,session.user.id))

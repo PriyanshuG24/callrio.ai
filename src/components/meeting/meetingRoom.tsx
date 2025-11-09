@@ -49,6 +49,7 @@ export const MeetingRoom = () => {
     isMeetingEnded,
     isUpdateMeetingParticipantSessionHistory,
     isRecordingButtonClicked,
+    totalParticipantCount,
   } = useMeetingLifecycle(
     call,
     localParticipant,
@@ -67,9 +68,13 @@ export const MeetingRoom = () => {
       allDone =
         recordingReady &&
         transcriptionReady &&
-        isUpdateMeetingParticipantSessionHistory;
+        (totalParticipantCount === 1 ||
+          isUpdateMeetingParticipantSessionHistory);
     } else {
-      allDone = transcriptionReady && isUpdateMeetingParticipantSessionHistory;
+      allDone =
+        transcriptionReady &&
+        (totalParticipantCount === 1 ||
+          isUpdateMeetingParticipantSessionHistory);
     }
 
     if (allDone) {
@@ -83,6 +88,7 @@ export const MeetingRoom = () => {
     router,
     isUpdateMeetingParticipantSessionHistory,
     isRecordingButtonClicked,
+    totalParticipantCount,
   ]);
 
   useEffect(() => {
@@ -166,6 +172,8 @@ export const MeetingRoom = () => {
         isOwner={isMeetingOwner}
         router={router}
         setIsEndingMeeting={setIsEndingMeeting}
+        showChat={showChat}
+        showParticipants={showParticipants}
       />
       {isEndingMeeting && (
         <ProcessingOverlay

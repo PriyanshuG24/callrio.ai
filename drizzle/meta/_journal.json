@@ -29,6 +29,13 @@
       "when": 1761652017657,
       "tag": "0003_blushing_fat_cobra",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1762765252629,
+      "tag": "0004_rare_sinister_six",
+      "breakpoints": true
     }
   ]
 }

@@ -186,9 +186,9 @@ export default function PreviousMeetingPageDetails() {
               <ul className="space-y-2">
                 {summary?.keyPoints?.length > 0 ? (
                   summary?.keyPoints.map((point: string, i: number) => (
-                    <li key={i} className="flex items-start">
-                      <span className="text-blue-400 mr-2">•</span>
-                      <span className="text-gray-300 text-sm">{point}</span>
+                    <li key={i} className="flex items-start gap-2">
+                      <span className="text-sm text-blue-400">•</span>
+                      <span className="text-sm">{point}</span>
                     </li>
                   ))
                 ) : (

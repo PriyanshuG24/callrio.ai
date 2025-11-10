@@ -1,5 +1,5 @@
 import { Clock, CheckCircle } from "lucide-react";
-
+import { useRef } from "react";
 interface MeetingCardHeaderProps {
   meeting: any;
   type: "upcoming" | "ended" | "recordings";
@@ -9,7 +9,7 @@ export const MeetingCardHeader = ({
   meeting,
   type,
 }: MeetingCardHeaderProps) => {
-  const title = meeting.title || "Recording";
+  const title = meeting.title || meeting.meetingTitle;
   return (
     <div className="p-4">
       <div className="flex items-start justify-between">

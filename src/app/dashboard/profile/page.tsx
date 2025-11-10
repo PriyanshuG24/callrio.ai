@@ -21,18 +21,26 @@ export default function ProfilePage() {
   const handleLogout = async () => {
     try {
       setIsLoggingOut(true);
+      // Perform cleanup first
       localStorage.removeItem("call-store-storage");
       sessionStorage.removeItem("meeting-session-cache");
-      await removeLinkedInToken();
-      await signOut();
-      router.replace("/login");
+
+      // Sign out and wait for it to complete
+      await Promise.all([removeLinkedInToken(), signOut()]);
+
+      // Use window.location for navigation to avoid React state updates during unmount
+      window.location.href = "/login";
     } catch (error) {
       console.error("Logout error:", error);
       setIsLoggingOut(false);
     }
   };
   if (isPending || isLoggingOut || !session) {
-    return <Loader />;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader />
+      </div>
+    );
   }
 
   const initials =

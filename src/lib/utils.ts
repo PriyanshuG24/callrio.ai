@@ -151,6 +151,8 @@ export const generateSummary = async (transcription:any) => {
 
     Transcript:
     ${fullTranscript}
+
+    If the transcript is minimal or not present, return "The Summary can't be generated due to minimal or no transcript" and in keypoints return "The KeyPoints can't be generated due to minimal or no transcript".
     `;
   const model = new GoogleGenerativeAI(`${process.env.NEXT_PUBLIC_GOOGLE_GENERATIVE_AI_API_KEY}`).getGenerativeModel({ model: "gemini-2.0-flash-exp" });
   const content = await model.generateContent(prompt);
@@ -161,7 +163,7 @@ export const generateSummary = async (transcription:any) => {
     aiSummary: parsedData.summary || "",
     keyPoints: parsedData.keyPoints || [],
   };
-  return callData;
+  return callData || { aiSummary: "", keyPoints: [] };
 }
 
 
@@ -177,14 +179,17 @@ export const thankyouGeneratedMessage= async(command:string)=>{
     1-2 meaningful sentences
     1 line about collaboration/learning
     Relevant hashtags (3-5 only)
-    Add 2 to 5 emojis if needed.`
+    Add 2 to 5 emojis if needed.
+    If user input didnot say to generate more than 1 post then generate only 1 post.
+    `
   ;
 
 
   const model = new GoogleGenerativeAI(`${process.env.NEXT_PUBLIC_GOOGLE_GENERATIVE_AI_API_KEY}`).getGenerativeModel({ model: "gemini-2.0-flash-exp" });
   const content = await model.generateContent(prompt);
   const rawText = content.response.text().trim();
-  return rawText;
+  const cleanText = rawText.replace(/```json|```/g, "").trim();
+  return cleanText;
 
 }
 
@@ -218,7 +223,8 @@ Output must be clean, specific, and professional.
   const model = new GoogleGenerativeAI(`${process.env.NEXT_PUBLIC_GOOGLE_GENERATIVE_AI_API_KEY}`).getGenerativeModel({ model: "gemini-2.0-flash-exp" });
   const content = await model.generateContent(prompt);
   const rawText = content.response.text().trim();
-  return rawText;
+  const cleanText = rawText.replace(/```json|```/g, "").trim();
+  return cleanText;
 }
 
 

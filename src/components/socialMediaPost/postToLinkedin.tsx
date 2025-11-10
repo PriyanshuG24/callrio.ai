@@ -39,6 +39,7 @@ export const PostToLinkedin = ({
   transcriptions?: any[];
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [postType, setPostType] = useState("thanks");
   const [content, setContent] = useState(
     `🙏 A big thank you to everyone who joined our meeting today! It was a great discussion and I appreciate everyone's valuable input.\n\n#Hastage1 #Hastage2 #Hastage3 ...\n\n For more specific post message give input in input box`
@@ -119,8 +120,7 @@ export const PostToLinkedin = ({
         className={cn(
           theme === "light"
             ? "bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50"
-            : "bg-[#1c1f2e]/80 backdrop-blur-md",
-          "sm:max-w-2xl"
+            : "bg-[#1c1f2e]/80 backdrop-blur-md"
         )}
       >
         <DialogHeader>
@@ -194,7 +194,8 @@ export const PostToLinkedin = ({
                 postTemplates[postType as keyof typeof postTemplates]
                   .placeholder
               }
-              className="min-h-[200px] max-w-[620px] max-h-[400px] min-w-[100px] overflow-y-auto"
+              rows={5}
+              className="min-h-[75px] max-h-[300px] sm:min-w-[400px] sm:max-w-[480px] max-w-[300px] min-w-[200px] overflow-y-auto"
             />
 
             {(postType === "thanks" || postType === "outcomes") && (
@@ -216,13 +217,15 @@ export const PostToLinkedin = ({
                 <Button
                   variant="secondary"
                   onClick={async () => {
+                    setIsGenerating(true);
                     const generated = await thankyouGeneratedMessage(command);
                     setContent(generated);
                     toast.success("Post generated ✅");
                     setCommand("");
+                    setIsGenerating(false);
                   }}
                 >
-                  ✨ Generate Message
+                  {isGenerating ? "Generating..." : "✨ Generate Message"}
                 </Button>
               )}
 
@@ -230,6 +233,7 @@ export const PostToLinkedin = ({
                 <Button
                   variant="secondary"
                   onClick={async () => {
+                    setIsGenerating(true);
                     const generated = await keyPointsGeneratedMessage(
                       command,
                       transcriptions,
@@ -238,9 +242,10 @@ export const PostToLinkedin = ({
                     setContent(generated);
                     toast.success("Key points generated ✅");
                     setCommand("");
+                    setIsGenerating(false);
                   }}
                 >
-                  ✨ Generate Key Points
+                  {isGenerating ? "Generating..." : "✨ Generate Key Points"}
                 </Button>
               )}
             </div>

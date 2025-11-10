@@ -116,6 +116,7 @@ export const meetingRecording = pgTable("meeting_recording", {
   meetingId: text("meeting_id")
     .notNull()
     .references(() => meeting.meetingId, { onDelete: "cascade" }),
+  meetingTitle:text("meeting_title").notNull(),
   url:text("url").notNull().unique(),
   sessionId:text("session_id").notNull(),
   start_time:timestamp("start_time").notNull(),

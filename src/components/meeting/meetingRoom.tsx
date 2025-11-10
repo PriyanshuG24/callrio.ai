@@ -8,7 +8,7 @@ import {
 } from "@stream-io/video-react-sdk";
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2, Copy } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
 import { useTheme } from "next-themes";
 import { useCallStore } from "@/store/callStore";
@@ -18,6 +18,7 @@ import { MeetingControls } from "./meetingControls";
 import { MeetingChatPanel } from "./meetingChatPanel";
 import { MeetingParticipantsList } from "./meetingParticipantsList";
 import { ProcessingOverlay } from "./meetingProcessingOverlay";
+import { toast } from "sonner";
 type CallLayoutType = "grid" | "speaker-left" | "speaker-right";
 
 export const MeetingRoom = () => {
@@ -134,8 +135,17 @@ export const MeetingRoom = () => {
   return (
     <section className="relative h-screen w-full overflow-hidden text-white bg-black">
       <div className="relative size-full flex items-center justify-center">
-        <CallLayout />
+        <button
+          onClick={() => {
+            navigator.clipboard.writeText(window.location.href);
+            toast.success("Link copied!");
+          }}
+          className="absolute top-4 left-4 p-2 rounded-full bg-white/10 hover:bg-white/20 transition"
+        >
+          <Copy className="w-5 h-5 text-white" />
+        </button>
 
+        <CallLayout />
         {showChat && liveChatChannel && (
           <MeetingChatPanel
             channel={liveChatChannel}

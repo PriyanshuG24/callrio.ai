@@ -1,0 +1,1 @@
+ALTER TABLE "meeting_recording" ADD COLUMN "meeting_title" text NOT NULL;

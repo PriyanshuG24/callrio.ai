@@ -63,7 +63,7 @@ export default function DashboardPage() {
     .slice(0, 4)
     .map((recording, index) => ({
       id: index++,
-      title: "Recording",
+      title: recording.meetingTitle,
       url: recording.url,
       date: formatTime(recording.start_time) || "Unknown Date",
       duration:
@@ -358,7 +358,7 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {recentRecordings.map((recording) => (
+                    {recentRecordings.slice(0, 1).map((recording) => (
                       <div
                         key={recording.id}
                         className="flex items-center p-3 border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer"

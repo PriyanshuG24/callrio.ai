@@ -99,8 +99,10 @@ export function useMeetingLifecycle(
 
     const onRecordingReady = async ({ call_recording }: any) => {
       if (!call_recording) return;
+      console.log(" call",call.meetingName,call.title,call.meeting_title,call?.state?.custom);
       const { data, success } = await createMeetingRecording(
         call.id,
+        "Recording of " +call?.state?.custom?.description,
         call_recording.url,
         call_recording.session_id,
         new Date(call_recording.start_time),

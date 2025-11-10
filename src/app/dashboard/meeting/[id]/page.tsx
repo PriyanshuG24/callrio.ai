@@ -1,39 +1,36 @@
 // src/app/dashboard/meeting/[id]/page.tsx
-'use client';
+"use client";
 
-import { useParams } from 'next/navigation';
-import { useSession } from '@/lib/auth-client';
-import { StreamCall, StreamTheme } from '@stream-io/video-react-sdk';
-import { useState, useEffect } from 'react';
-import MeetingRoom from '@/components/meeting/meetingRoom';
-import MeetingSetup from '@/components/meeting/meetingSetup';
-import { useGetCallById } from '@/hooks/useGetCallById';
-import { Loader2 } from 'lucide-react';
+import { useParams } from "next/navigation";
+import { useSession } from "@/lib/auth-client";
+import { StreamCall, StreamTheme } from "@stream-io/video-react-sdk";
+import { useState, useEffect } from "react";
+import { MeetingRoom } from "@/components/meeting/meetingRoom";
+import MeetingSetup from "@/components/meeting/meetingSetup";
+import { useGetCallById } from "@/hooks/useGetCallById";
+import { Loader2 } from "lucide-react";
 
 export default function MeetingPage() {
   const { id } = useParams<{ id: string }>();
   const { data: user, isPending: isSessionLoading } = useSession();
   const [isSetupComplete, setIsSetupComplete] = useState(false);
-  const {call,isCallLoading,fetchCallById} = useGetCallById();
+  const { call, isCallLoading, fetchCallById } = useGetCallById();
   const [isCallAlreadyEnded, setIsCallAlreadyEnded] = useState(false);
-  console.log("id",id)
-  useEffect(()=>{
-    if(!id){
-      console.log("id not found")
+  useEffect(() => {
+    if (!id) {
       return;
     }
     fetchCallById(id);
-  },[id])
-  useEffect(()=>{
-    if(!call){
-      console.log("call not found")
+  }, [id]);
+  useEffect(() => {
+    if (!call) {
       return;
     }
-    if(call?.state?.endedAt){
+    if (call?.state?.endedAt) {
       setIsCallAlreadyEnded(true);
       return;
     }
-  },[call]) 
+  }, [call]);
   if (isSessionLoading || isCallLoading) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
@@ -59,22 +56,21 @@ export default function MeetingPage() {
       </div>
     );
   }
-  console.log("call",call)
   return (
     <>
-    {call && (
-      <main className="h-screen w-full">
-      <StreamCall call={call}>
-        <StreamTheme>
-          {!isSetupComplete ? (
-            <MeetingSetup  setIsSetupComplete={setIsSetupComplete} />) 
-            : 
-          <MeetingRoom />}
-        </StreamTheme>
-      </StreamCall>
-    </main>
-    )}
+      {call && (
+        <main className="h-screen w-full">
+          <StreamCall call={call}>
+            <StreamTheme>
+              {!isSetupComplete ? (
+                <MeetingSetup setIsSetupComplete={setIsSetupComplete} />
+              ) : (
+                <MeetingRoom />
+              )}
+            </StreamTheme>
+          </StreamCall>
+        </main>
+      )}
     </>
   );
 }
-

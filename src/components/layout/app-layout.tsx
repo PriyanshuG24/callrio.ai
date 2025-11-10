@@ -1,9 +1,9 @@
 // src/components/layout/app-layout.tsx
-'use client';
+"use client";
 
-import { Header } from './header';
-import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Header } from "./header";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -14,12 +14,14 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   }, []);
 
   const shouldShowHeader = () => {
-    if (pathname?.startsWith('/dashboard')) {
+    if (pathname?.startsWith("/dashboard")) {
       return false;
     }
-    return pathname === '/' || 
-           pathname?.startsWith('/login') || 
-           pathname?.startsWith('/register');
+    return (
+      pathname === "/" ||
+      pathname?.startsWith("/login") ||
+      pathname?.startsWith("/register")
+    );
   };
 
   if (!isMounted) {
@@ -30,12 +32,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="flex-1">
-      {showHeader && <Header />}
-      </div>
-      <main className="flex-1">
-        {children}
-      </main>
+      <div className="flex-1">{showHeader && <Header />}</div>
+      <main className="flex-1">{children}</main>
     </div>
   );
 }

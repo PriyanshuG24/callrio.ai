@@ -147,10 +147,6 @@
   }
 }
 
-/* src/app/globals.css */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 :root {
   --glass-bg: rgba(255, 255, 255, 0.15);
@@ -178,7 +174,7 @@
   transition: all 0.3s ease;
 }
 .glass-card {
-  @apply rounded-2xl bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl shadow-lg border border-white/20;
+  @apply rounded-2xl bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl shadow-lg border;
 }
 
 .glass-card-footer {
@@ -211,3 +207,8 @@
 .floating {
   animation: float 6s ease-in-out infinite;
 }
+
+html {
+  scroll-behavior: smooth;
+}
+

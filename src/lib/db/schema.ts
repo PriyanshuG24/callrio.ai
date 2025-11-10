@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean,uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean,uuid} from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -123,3 +123,12 @@ export const meetingRecording = pgTable("meeting_recording", {
   createdAt:timestamp("created_at").defaultNow()
 });
 
+
+export const linkedinToken = pgTable("linkedin_token", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId:text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+  linkedinUserId:text("linkedin_user_id").notNull().unique(),
+  accessToken:text("access_token").notNull(),
+  expiresIn:text("expires_in").notNull(),
+  createdAt:timestamp("created_at").defaultNow()
+})

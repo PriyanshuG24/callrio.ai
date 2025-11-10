@@ -1,11 +1,15 @@
-'use client';
+"use client";
 
-import { Chat } from 'stream-chat-react';
-import { useEffect, useState } from 'react';
-import { useSession } from '@/lib/auth-client';
-import { getChatClient } from '@/lib/chat-client';
-import Loader from '@/components/ui/loader';
-export const StreamChatProvider = ({ children }: { children: React.ReactNode }) => {
+import { Chat } from "stream-chat-react";
+import { useEffect, useState } from "react";
+import { useSession } from "@/lib/auth-client";
+import { getChatClient } from "@/lib/chat-client";
+import Loader from "@/components/ui/loader";
+export const StreamChatProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [chatClient, setChatClient] = useState<any>(null);
   const { data: session, isPending } = useSession();
   useEffect(() => {
@@ -16,11 +20,13 @@ export const StreamChatProvider = ({ children }: { children: React.ReactNode }) 
         const client = await getChatClient({
           id: session.user.id,
           name: session.user.name,
-          image: session.user.image || undefined,
+          image:
+            session.user.image ||
+            `https://getstream.io/random_png/?name=${session.user.name}`,
         });
         setChatClient(client);
       } catch (err) {
-        console.error('Failed to initialize Stream Chat:', err);
+        console.error("Failed to initialize Stream Chat:", err);
       }
     };
 
@@ -29,9 +35,5 @@ export const StreamChatProvider = ({ children }: { children: React.ReactNode }) 
 
   if (isPending || !chatClient) return <Loader />;
 
-  return (
-    <Chat client={chatClient}>
-      {children}
-    </Chat>
-  );
+  return <Chat client={chatClient}>{children}</Chat>;
 };

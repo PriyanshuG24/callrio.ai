@@ -4,22 +4,24 @@ import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
 export const createMeetingRecording = async (meetingId: string, url: string, sessionId: string, start_time: Date, end_time: Date) => {
   try {
-    await db.insert(meetingRecording).values({
+    const data=await db.insert(meetingRecording).values({
       meetingId,
       url,
       sessionId,
       start_time,
       end_time,
-    });
+    }).returning();
     return {
       success: true,
       message: "Recording created successfully",
+      data:data[0],
     };
   } catch (error) {
     console.error("Error creating meeting recording:", error);
     return {
       success: false,
       message: "Failed to create meeting recording",
+      data:null
     };
   }
 };

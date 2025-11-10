@@ -34,54 +34,107 @@ export const formatTime = (dateString?: string | Date | number) => {
 export const getMeetingDuration = (start?: string | Date, end?: string | Date) => {
   if (!start || !end) return "N/A";
   try {
-    const startDate =formatTime(start)
-    const endDate =formatTime(end)
-    const [startHours, startMinutes, startSeconds] = startDate.replace("AM","").replace("PM","").split(":").map(Number);
-    const [endHours, endMinutes, endSeconds] = endDate.replace("AM","").replace("PM","").split(":").map(Number);
-    let duration = Math.abs((endHours - startHours)) * 60 + Math.abs((endMinutes - startMinutes)) + Math.abs((endSeconds - startSeconds))/60;
-    if(duration<1){
-      duration*=60;
-      return `${duration.toFixed(2)} sec`;
+  const startDate = formatTime(start);
+  const endDate = formatTime(end);
+
+  const convertToSeconds = (time: string) => {
+    const [hms, period] = time.split(" ");
+    let [h, m, s] = hms.split(":").map(Number);
+    
+    if (period === "PM" && h !== 12) h += 12;
+    if (period === "AM" && h === 12) h = 0;
+
+    return h * 3600 + m * 60 + s;
+  };
+
+  const startSec = convertToSeconds(startDate);
+  const endSec = convertToSeconds(endDate);
+
+  let diffSec = Math.abs(endSec - startSec);
+
+  if (diffSec < 60) {
+    return `${diffSec.toFixed(0)} sec`;
+  } else if (diffSec < 3600) {
+    return `${(diffSec / 60).toFixed(2)} min`;
+  } else {
+    return `${(diffSec / 3600).toFixed(2)} hr`;
+  }
+} catch {
+  return "N/A";
+}
+};
+export const getTotalMeetingDuration = (calls?: any[]) => {
+  if (!calls) return "N/A";
+  const convertToSeconds = (time: string) => {
+    const [hms, period] = time.split(" ");
+    let [h, m, s] = hms.split(":").map(Number);
+    
+    if (period === "PM" && h !== 12) h += 12;
+    if (period === "AM" && h === 12) h = 0;
+
+    return h * 3600 + m * 60 + s;
+  };
+  try {
+    let totalDuration = 0;
+    for (const call of calls) {
+      const startSec = convertToSeconds(formatTime(call.startAt));
+      const endSec = convertToSeconds(formatTime(call.endedAt));
+      let diffSec = Math.abs(endSec - startSec);
+      totalDuration += diffSec;
     }
-    else if(duration<60){
-      return `${duration.toFixed(2)} min`;
+    if (totalDuration < 60) {
+      return `${totalDuration.toFixed(0)} sec`;
+    } else if (totalDuration < 3600) {
+      return `${(totalDuration / 60).toFixed(2)} min`;
+    } else {
+      return `${(totalDuration / 3600).toFixed(2)} hr`;
     }
-    else{
-      duration/=60;
-      return `${duration.toFixed(2)} hr`;
-    }
-  } catch {
+  } catch (error) {
     return "N/A";
   }
+
 };
 
-export const formateTranscription =  (transcription:any,start_time:Date,end_time:Date) => {
-  const data:any=[];
-  let prevSpeaker=transcription[0].name;
-  let text="";
-  let time=0;
-  transcription.forEach((t:any) => {
-    if(t.name!==prevSpeaker){
+export const formateTranscription = (transcription: any[]) => {
+  if (!Array.isArray(transcription) || transcription.length === 0) {
+    return [];
+  }
+
+  const data: any[] = [];
+  let prevSpeaker = transcription[0]?.name || "Unknown";
+  let text = "";
+  let time = 0;
+
+  transcription.forEach((t: any) => {
+    if (t.name !== prevSpeaker) {
       data.push({
-        text:text,
-        duration:time<60?`${time.toFixed(2)} sec`:time<3600?`${time.toFixed(2)} min`:`${time.toFixed(2)} hr`,
-        speakerName:t.name,
-      })
-      time=0;
-      text="";
-      
+        text,
+        duration: time < 60 ? `${time.toFixed(2)} sec` :
+                time < 3600 ? `${(time / 60).toFixed(2)} min` :
+                              `${(time / 3600).toFixed(2)} hr`,
+        speakerName: prevSpeaker,
+      });
+
+      time = 0;
+      text = "";
     }
-    time+=((t.stop_ts-t.start_ts)/1000);
-    text+=t.text;
-    prevSpeaker=t.name;
-  })
+
+    time += ((t.stop_ts - t.start_ts) / 1000);
+    text += t.text;
+    prevSpeaker = t.name;
+  });
+
   data.push({
-    text:text,
-    duration:time<60?`${time.toFixed(2)} sec`:time<3600?`${time.toFixed(2)} min`:`${time.toFixed(2)} hr`,
-    speakerName:prevSpeaker
-  })
+    text,
+    duration: time < 60 ? `${time.toFixed(2)} sec` :
+            time < 3600 ? `${(time / 60).toFixed(2)} min` :
+                          `${(time / 3600).toFixed(2)} hr`,
+    speakerName: prevSpeaker
+  });
+
   return data;
-}
+};
+
 
 export const generateSummary = async (transcription:any) => {
   const fullTranscript = transcription
@@ -101,7 +154,6 @@ export const generateSummary = async (transcription:any) => {
     `;
   const model = new GoogleGenerativeAI(`${process.env.NEXT_PUBLIC_GOOGLE_GENERATIVE_AI_API_KEY}`).getGenerativeModel({ model: "gemini-2.0-flash-exp" });
   const content = await model.generateContent(prompt);
-  console.log(JSON.stringify(content.response.text()));
   const rawText = content.response.text().trim();
   const cleanText = rawText.replace(/```json|```/g, "").trim();
   const parsedData = JSON.parse(cleanText);
@@ -111,6 +163,64 @@ export const generateSummary = async (transcription:any) => {
   };
   return callData;
 }
+
+
+export const thankyouGeneratedMessage= async(command:string)=>{
+  const prompt = `
+    User input:${command} 
+    Write a short and specific LinkedIn thank-you post for meeting participants consider the user input too.
+
+    Tone: professional, appreciative, concise.
+    Goal: thank attendees and acknowledge contributions.
+
+    Output format:
+    1-2 meaningful sentences
+    1 line about collaboration/learning
+    Relevant hashtags (3-5 only)
+    Add 2 to 5 emojis if needed.`
+  ;
+
+
+  const model = new GoogleGenerativeAI(`${process.env.NEXT_PUBLIC_GOOGLE_GENERATIVE_AI_API_KEY}`).getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+  const content = await model.generateContent(prompt);
+  const rawText = content.response.text().trim();
+  return rawText;
+
+}
+
+export const keyPointsGeneratedMessage= async(command:string,transcriptions?:any,recordingLink?:string)=>{
+  const prompt = `
+Generate concise meeting outcome bullets.
+
+Rules:
+- Heading should be "Meeting Outcomes : "
+- Also add subheading according the action items, decisions, and next steps.
+- Only action items, decisions, and next steps.
+- If transcription or input is minimal, return only 2–3 simple general bullets.
+- If no real data, provide a brief generic outcome summary.
+- If recording link is not available then dont write it.
+- Keep it business-focused, no hype, no fluff.
+- Use crisp bullet points (•).
+- Add 2 relevant hashtags at the end (no more) and in new line also.
+
+User Notes:
+${command || "No user notes provided"}
+
+Meeting Transcript:
+${transcriptions?.length ? JSON.stringify(transcriptions) : "No transcript available"}
+
+Meeting Recording Link:${recordingLink}
+
+Output must be clean, specific, and professional.
+`;
+
+
+  const model = new GoogleGenerativeAI(`${process.env.NEXT_PUBLIC_GOOGLE_GENERATIVE_AI_API_KEY}`).getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+  const content = await model.generateContent(prompt);
+  const rawText = content.response.text().trim();
+  return rawText;
+}
+
 
 
 export function downloadSummaryPDF(data: any, callData: any) {

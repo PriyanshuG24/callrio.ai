@@ -1,61 +1,37 @@
-// src/actions/streamAction/manage-meeting-channel.ts
-'use server';
-
-import { StreamChat } from 'stream-chat';
+"use server";
+import { StreamChat } from "stream-chat";
 
 const serverClient = StreamChat.getInstance(
   process.env.NEXT_PUBLIC_STREAM_API_KEY!,
   process.env.STREAM_SECRET_KEY!
 );
-
-export const createOrUpdateMeetingChannel = async (
-  callId: string, 
-  userIds: string[],
-  currentUserId: string
-) => {
+export async function createMeetingChannel(roomId: string, hostId: string) {
   try {
-    if (userIds.length < 2) {
-      console.log('At least 2 users required for a channel');
-    }
+    await serverClient.upsertUsers([{ id: hostId }]);
+    const channel = serverClient.channel("messaging", roomId, {
+      name: `Meeting Channel`,
+      created_by_id: hostId,
+      description: `Dont spam!!`,
+      members: [hostId],
+      image: `https://imgs.search.brave.com/3D-AQfimLQASzjltXYeprzUQPBM1YMIDOdJCE_go_QM/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWcu/aWNvbnM4LmNvbS8_/c2l6ZT0xMjAwJmlk/PVRZSHBNM3dacXd4/MSZmb3JtYXQ9anBn`,
+    } as any);
 
-   
-    const allMembers = Array.from(new Set([currentUserId, ...userIds]));
-
-    // Try to get existing channel
-    const existingChannels = await serverClient.queryChannels({
-      type: 'messaging',
-      id: callId
-    });
-
-    let channel;
-    
-    if (existingChannels.length > 0) {
-      channel = existingChannels[0];
-      
-      // Get current members
-      const currentMembers = Object.keys(channel.data?.members || {});
-      
-      // Find members to add
-      const membersToAdd = allMembers.filter(memberId => !currentMembers.includes(memberId));
-      
-      if (membersToAdd.length > 0) {
-        await channel.addMembers(membersToAdd);
-        console.log(`Added ${membersToAdd.length} new members to channel ${callId}`);
-      }
-    } else {
-      // Create new channel
-      channel = serverClient.channel('messaging', callId, {
-        members: allMembers,
-        created_by_id: currentUserId
-      });
-      
-      await channel.create();
-      console.log(`Created new channel ${callId} with ${allMembers.length} members`);
-    }
-
-    return { success: true, channelId: callId };
+    await channel.create();
+    return { success: true };
   } catch (error) {
-    console.error('Error managing meeting channel:', error);
-    throw error;
+    console.error("Channel creation failed:", error);
+    return { success: false, error };
   }
-};
+}
+
+export async function joinMeetingChannel(roomId: string, userId: string) {
+  try {
+    await serverClient.upsertUsers([{ id: userId }]);
+    const channel = serverClient.channel("messaging", roomId);
+    await channel.addMembers([userId]);
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to join channel:", error);
+    return { success: false, error };
+  }
+}
